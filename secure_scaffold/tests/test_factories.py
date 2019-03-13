@@ -4,14 +4,13 @@ from secure_scaffold import factories, settings
 
 
 def test_app_factory_returns_an_app():
-    app = factories.app_factory('testing')
+    app = factories.AppFactory().generate()
 
     assert isinstance(app, Flask)
-    assert app.name == 'testing'
 
 
 def test_app_factory_adds_csp_headers():
-    app = factories.app_factory()
+    app = factories.AppFactory().generate()
     client = app.test_client()
 
     resp = client.get('/')
