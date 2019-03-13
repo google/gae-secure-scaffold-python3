@@ -15,3 +15,6 @@ CSP_CONFIG = {
     'script-src': f"'nonce-{generate_nonce()}' 'strict dynamic' 'unsafe-inline' https: http:",
     'report-uri': '/csp/',
 }
+
+NON_XSRF_PROTECTED_METHODS = ['options', 'head', 'get']
+XSRF_TIME_LIMIT = 86400
