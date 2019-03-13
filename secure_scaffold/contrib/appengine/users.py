@@ -20,6 +20,26 @@ class UserNotFoundError(Error):
     """No email argument was specified, and no user is logged in."""
 
 
+def requires_auth(f):
+    """A decorator that requires a currently logged in user."""
+    def decorator(*args, **kwargs):
+        try:
+            get_current_user()
+        except UserNotFoundError:
+            flask.abort(401)
+        return f(*args, **kwargs)
+    return decorator
+
+
+def requires_admin(f):
+    """A decorator that requires a currently logged in administrator."""
+    def decorator(*args, **kwargs):
+        if not is_current_user_admin():
+            flask.abort(401)
+        return f(*args, **kwargs)
+    return decorator
+
+
 def get_header(header):
     return flask.request.headers.get(header)
 

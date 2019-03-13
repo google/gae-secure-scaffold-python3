@@ -1,8 +1,8 @@
 from unittest import mock
 
 import pytest
+from werkzeug.exceptions import HTTPException
 
-from secure_scaffold import constants
 from secure_scaffold.contrib.appengine import users
 
 
@@ -10,11 +10,50 @@ from secure_scaffold.contrib.appengine import users
 def request():
     with mock.patch("flask.request") as mock_request:
         mock_request.headers = {
-            constants.USER_EMAIL_HEADER: "test@email.com",
-            constants.USER_ID_HEADER: "1",
-            constants.USER_AUTH_DOMAIN_HEADER: "gmail.com",
+            users.USER_EMAIL_HEADER: "test@email.com",
+            users.USER_ID_HEADER: "1",
+            users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
         }
         yield mock_request
+
+
+def test_requires_auth_decorator_success(request):
+    func = mock.MagicMock()
+    decorated_req = users.requires_auth(func)
+    decorated_req(request)
+    assert func.called
+
+
+def test_requires_auth_decorator_fail(request):
+    request.headers.pop(users.USER_EMAIL_HEADER)
+    request.headers.pop(users.USER_ID_HEADER)
+
+    func = mock.MagicMock()
+    decorated_req = users.requires_auth(func)
+    with pytest.raises(HTTPException) as http_error:
+        decorated_req(request)
+        assert not func.called
+        assert http_error.exception.code == 401
+
+
+def test_requires_admin_decorator_success(request):
+    request.headers[users.USER_ADMIN_HEADER] = "1"
+
+    func = mock.MagicMock()
+    decorated_req = users.requires_admin(func)
+    decorated_req(request)
+    assert func.called
+
+
+def test_requires_admin_decorator_fail(request):
+    request.headers[users.USER_ADMIN_HEADER] = "2"
+
+    func = mock.MagicMock()
+    decorated_req = users.requires_admin(func)
+    with pytest.raises(HTTPException) as http_error:
+        decorated_req(request)
+        assert not func.called
+        assert http_error.exception.code == 401
 
 
 def test_get_header(request):
@@ -25,10 +64,10 @@ def test_get_header(request):
 
 
 def test_is_current_user_admin(request):
-    request.headers[constants.USER_ADMIN_HEADER] = "1"
+    request.headers[users.USER_ADMIN_HEADER] = "1"
     assert users.is_current_user_admin()
 
-    request.headers[constants.USER_ADMIN_HEADER] = "2"
+    request.headers[users.USER_ADMIN_HEADER] = "2"
     assert not users.is_current_user_admin()
 
 
@@ -53,7 +92,7 @@ def test_user_with_kwargs():
 def test_user_strict(request):
     users.User()
 
-    request.headers[constants.USER_EMAIL_HEADER] = None
+    request.headers[users.USER_EMAIL_HEADER] = None
     with pytest.raises(users.UserNotFoundError):
         users.User()
     users.User(_strict_mode=False)
@@ -63,7 +102,7 @@ def test_user_nickname(request):
     user = users.User()
     assert user.nickname() == "test@email.com"
 
-    request.headers[constants.USER_EMAIL_HEADER] = "test@gmail.com"
+    request.headers[users.USER_EMAIL_HEADER] = "test@gmail.com"
     user = users.User()
     assert user.nickname() == "test"
 
