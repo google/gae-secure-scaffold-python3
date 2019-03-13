@@ -30,10 +30,13 @@ def test_requires_auth_decorator_fail(request):
 
     func = mock.MagicMock()
     decorated_req = users.requires_auth(func)
-    with pytest.raises(HTTPException) as http_error:
-        decorated_req(request)
-        assert not func.called
-        assert http_error.exception.code == 401
+    with pytest.raises(HTTPException):
+        try:
+            decorated_req(request)
+        except HTTPException as e:
+            assert e.code == 401
+            raise
+    assert not func.called
 
 
 def test_requires_admin_decorator_success(request):
@@ -50,10 +53,13 @@ def test_requires_admin_decorator_fail(request):
 
     func = mock.MagicMock()
     decorated_req = users.requires_admin(func)
-    with pytest.raises(HTTPException) as http_error:
-        decorated_req(request)
-        assert not func.called
-        assert http_error.exception.code == 401
+    with pytest.raises(HTTPException):
+        try:
+            decorated_req(request)
+        except HTTPException as e:
+            assert e.code == 401
+            raise
+    assert not func.called
 
 
 def test_get_header(request):
