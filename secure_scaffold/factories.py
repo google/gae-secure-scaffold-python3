@@ -72,9 +72,13 @@ class AppFactory:
 
     def add_xsrf_error_handler(self, app: Flask) -> Flask:
         """
+        Add the xsrf error handler to the app.
 
-        :param app:
-        :return:
+        We want xsrf to return verbose error messages and for this we need to
+        attach a handler to the app to return the error response correctly.
+
+        :param app: The Flask app to add the handler to.
+        :return: The Flask app now with error handler.
         """
         app.register_error_handler(xsrf.XSRFError, xsrf.handle_xsrf_error)
         return app
