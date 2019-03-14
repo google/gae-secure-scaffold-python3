@@ -1,6 +1,7 @@
 from flask import Flask
 
 from secure_scaffold import settings
+from secure_scaffold import xsrf
 
 
 class AppFactory:
@@ -69,6 +70,15 @@ class AppFactory:
         app.after_request(self.add_csp_headers)
         return app
 
+    def add_xsrf_error_handler(self, app: Flask) -> Flask:
+        """
+
+        :param app:
+        :return:
+        """
+        app.register_error_handler(xsrf.XSRFError, xsrf.handle_xsrf_error)
+        return app
+
     def generate(self) -> Flask:
         """
         Generate a Flask application with our preferred defaults.
@@ -79,5 +89,6 @@ class AppFactory:
         app = Flask(self.get_name())
         app = self.setup_app_config(app)
         app = self.add_app_headers(app)
+        app = self.add_xsrf_error_handler(app)
 
         return app

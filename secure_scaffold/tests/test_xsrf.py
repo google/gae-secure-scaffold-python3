@@ -2,17 +2,17 @@ import hmac
 import hashlib
 
 import pytest
-import flask
 from itsdangerous import URLSafeTimedSerializer
 
-from secure_scaffold import xsrf, settings
+from secure_scaffold import xsrf, settings, factories
 from secure_scaffold.contrib.appengine import users
 
-app = flask.Flask(__name__)
+app = factories.AppFactory().generate()
 
 
 @pytest.fixture
 def client():
+    print("APP ", app)
     app.config['TESTING'] = True
     client = app.test_client()
 
@@ -74,6 +74,7 @@ def test_xsrf_protected_post_success(client):
 
 
 def test_xsrf_protected_post_fail(client):
+
     response = client.post(
         '/',
         headers={
@@ -83,8 +84,8 @@ def test_xsrf_protected_post_fail(client):
         },
         data={}
     )
-
     assert response.status_code == 401
+    assert response.json['message'] == 'XSRF token required but not given.'
 
 
 def test_xsrf_protected_post_fail_invalid(client):
@@ -115,3 +116,4 @@ def test_xsrf_protected_post_fail_invalid(client):
 
     assert response.status_code == 401
     assert serialized_token not in app.jinja_env.globals['xsrf_token']
+    assert response.json['message'] == 'XSRF token does not match server token.'
