@@ -40,63 +40,78 @@ def test_xsrf_protected_get_success(client):
     serialized_token = s.dumps(token)
 
     assert 'XSRF-TOKEN=' + serialized_token in response.headers.get('Set-Cookie')
-
-
-def test_xsrf_protected_post_fail_no_xsrf(client):
-    app.secret_key = b'1234'
-
-    response = client.post('/', headers={
-            users.USER_EMAIL_HEADER: "test@email.com",
-            users.USER_ID_HEADER: "1",
-            users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
-        })
-
-    assert response.status_code == 401
-
-
-def test_xsrf_protected_post_fail_invalid_xsrf(client):
-    app.secret_key = b'1234'
-
-    client.get('/', headers={
-        users.USER_EMAIL_HEADER: "test@email.com",
-        users.USER_ID_HEADER: "1",
-        users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
-    })
-
-    user = "test@email.com".encode('utf8')
-    token = hmac.new(b'5678', user, hashlib.sha1).hexdigest()
-    s = URLSafeTimedSerializer(b'1234')
-    serialized_token = s.dumps(token)
-
-    client.set_cookie('localhost', 'XSRF-TOKEN', serialized_token)
-    response = client.post('/', headers={
-            users.USER_EMAIL_HEADER: "test@email.com",
-            users.USER_ID_HEADER: "1",
-            users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
-        })
-
-    assert response.status_code == 401
+    assert serialized_token in app.jinja_env.globals['xsrf_token']
 
 
 def test_xsrf_protected_post_success(client):
     app.secret_key = b'1234'
 
     client.get('/', headers={
-        users.USER_EMAIL_HEADER: "test@email.com",
-        users.USER_ID_HEADER: "1",
-        users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
-    })
+            users.USER_EMAIL_HEADER: "test@email.com",
+            users.USER_ID_HEADER: "1",
+            users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
+        })
 
     user = "test@email.com".encode('utf8')
     token = hmac.new(b'1234', user, hashlib.sha1).hexdigest()
     s = URLSafeTimedSerializer(b'1234')
     serialized_token = s.dumps(token)
 
-    client.set_cookie('localhost', 'XSRF-TOKEN', serialized_token)
-    response = client.post('/', headers={
+    response = client.post(
+        '/',
+        headers={
+            users.USER_EMAIL_HEADER: "test@email.com",
+            users.USER_ID_HEADER: "1",
+            users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
+        },
+        data={
+            'xsrf': serialized_token
+        }
+    )
+
+    assert response.status_code == 200
+    assert serialized_token in app.jinja_env.globals['xsrf_token']
+
+
+def test_xsrf_protected_post_fail(client):
+    response = client.post(
+        '/',
+        headers={
+            users.USER_EMAIL_HEADER: "test@email.com",
+            users.USER_ID_HEADER: "1",
+            users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
+        },
+        data={}
+    )
+
+    assert response.status_code == 401
+
+
+def test_xsrf_protected_post_fail_invalid(client):
+    app.secret_key = b'1234'
+
+    client.get('/', headers={
             users.USER_EMAIL_HEADER: "test@email.com",
             users.USER_ID_HEADER: "1",
             users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
         })
 
-    assert response.status_code == 200
+    user = "wrong_user@email.com".encode('utf8')
+    token = hmac.new(b'1234', user, hashlib.sha1).hexdigest()
+    s = URLSafeTimedSerializer(b'1234')
+    serialized_token = s.dumps(token)
+
+    response = client.post(
+        '/',
+        headers={
+            users.USER_EMAIL_HEADER: "test@email.com",
+            users.USER_ID_HEADER: "1",
+            users.USER_AUTH_DOMAIN_HEADER: "gmail.com",
+        },
+        data={
+            'xsrf': serialized_token
+        }
+    )
+
+    assert response.status_code == 401
+    assert serialized_token not in app.jinja_env.globals['xsrf_token']

@@ -22,20 +22,22 @@ def xsrf_protected(non_xsrf_protected_methods: List[str] = settings.NON_XSRF_PRO
         def decorator(*args, **kwargs):
 
             if flask.request.method.lower() in non_xsrf_protected_methods:
-                # set cookie
+                # Generate XSRF token
+                token = generate_xsrf_token()
+                flask.current_app.jinja_env.globals['xsrf_token'] = token
+
                 @flask.after_this_request
                 def add_cookie(response):
-                    set_token = generate_xsrf_token()
-                    response.set_cookie('XSRF-TOKEN', set_token)
+                    response.set_cookie('XSRF-TOKEN', token)
                     return response
 
                 return f(*args, **kwargs)
             else:
-                # check cookie
-                get_token = flask.request.cookies.get('XSRF-TOKEN')
-                if not get_token:
+                # Validate XSRF token
+                token = flask.request.form.get('xsrf')
+                if not token:
                     flask.abort(401)
-                valid = validate_xsrf_token(get_token)
+                valid = validate_xsrf_token(token)
                 if valid:
                     return f(*args, **kwargs)
                 else:
