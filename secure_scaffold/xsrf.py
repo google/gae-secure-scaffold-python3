@@ -60,11 +60,8 @@ def xsrf_protected(non_xsrf_protected_methods: List[str] = settings.NON_XSRF_PRO
                 if not token:
                     raise XSRFError("XSRF token required but not given.")
 
-                try:
-                    validate_xsrf_token(token)
-                    return f(*args, **kwargs)
-                except XSRFError:
-                    raise
+                validate_xsrf_token(token)
+                return f(*args, **kwargs)
 
         return decorator
     return decorated
