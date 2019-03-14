@@ -33,6 +33,8 @@ def xsrf_protected(non_xsrf_protected_methods: List[str] = settings.NON_XSRF_PRO
             else:
                 # check cookie
                 get_token = flask.request.cookies.get('XSRF-TOKEN')
+                if not get_token:
+                    flask.abort(401)
                 valid = validate_xsrf_token(get_token)
                 if valid:
                     return f(*args, **kwargs)
@@ -48,34 +50,33 @@ def generate_xsrf_token():
     Generate a token using the secret key and the user
     We use the URLSafeTimeSerializer to check whether the token times out
     Add the token to the session context
+    Return the serialized token to the user
     """
     s = URLSafeTimedSerializer(flask.current_app.secret_key)
-    token = hmac.new(flask.current_app.secret_key, get_current_user(), hashlib.sha1()).hexdigest()
-    s.dumps(token)
+    user = get_current_user().__str__().encode('utf8')
+    token = hmac.new(flask.current_app.secret_key, user, hashlib.sha1).hexdigest()
+    serialized_token = s.dumps(token)
 
     flask.session['xsrf_token'] = token
-    return token
+    return serialized_token
 
 
 def validate_xsrf_token(token):
     """
     Validate a token against the current session token
 
-    :param token: Token to validate
+    :param token: Token to validate (should be serialized)
     :return True/False
     """
     s = URLSafeTimedSerializer(flask.current_app.secret_key)
     try:
         token = s.loads(token, max_age=settings.XSRF_TIME_LIMIT)
     except SignatureExpired:
-        # raise Exception("XSRF token has expired")
         return False
     except BadData:
-        # raise Exception("XSRF token is invalid")
         return False
 
     if not hmac.compare_digest(flask.session['xsrf_token'], token):
-        # raise Exception("XSRF token does not match")
         return False
 
     return True
