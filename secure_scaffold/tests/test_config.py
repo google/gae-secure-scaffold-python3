@@ -5,7 +5,7 @@ from unittest import mock
 
 def test_import_settings():
     mock_settings_module = mock.MagicMock()
-    os.environ['SETTINGS_MODULE'] = 'development'
+    os.environ['SETTINGS_MODULE'] = 'settings.development'
 
     with mock.patch.dict('sys.modules', **{
             'settings': mock_settings_module,

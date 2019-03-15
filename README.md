@@ -37,6 +37,7 @@ This will automatically set all the needed CSP headers.
 ## XSRF
 
 To enable XSRF protection add the decorator to the endpoints you need it for.
+This needs to be set *after* the route decorator
 e.g.
 
     @app.route('/', methods=['GET', 'POST'])
@@ -84,3 +85,4 @@ We recommend setting up a virtual env to install dependencies:
 To run unit tests:
 
 `pytest`
+
