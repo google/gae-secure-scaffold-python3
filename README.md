@@ -4,13 +4,38 @@
 
 Please note: this is not an official Google product.
 
-This is the secure scaffold for Google App Engine.
+This is the secure scaffold package for Google App Engine.
 
 It is built using Python 3 and Flask.
 
 Structure:
 
-* / - top level directory for common files, e.g. app.yaml
+`secure_scaffold/` 
+- Top level directory
+
+`secure_scaffold/contrib` 
+- Contains shims for App Engine APIs that are no longer available in Python 3
+
+`secure_scaffold/tests` 
+- Tests for the secure scaffold 
+
+`secure_scaffold/config.py` 
+- Similar to django settings set up 
+- Looks for the "SETTINGS_MODULE" environment variable to be set 
+- See Settings Config below on how to use this
+
+`secure_scaffold/factories.py`
+- The main Flask app factory that applies the security defaults
+- See App Factory below on how to use this
+
+`secure_scaffold/settings.py`
+- Security settings 
+- Defines our CSP headers and other specifics
+
+`secure_scaffold/xsrf.py`
+- Defines XSRF decorators to be used with your flask app 
+- See XSRF below on how to use this
+
 
 The scaffold provides the following basic security guarantees by default through
 a flask app factory found in `secure_scaffold/factories.py`. This app will:
@@ -23,8 +48,22 @@ a flask app factory found in `secure_scaffold/factories.py`. This app will:
 1. Verify XSRF tokens by default on authenticated requests using any verb other
    that GET, HEAD, or OPTIONS.  See the `secure_scaffold/xsrf.py` for more information.
 
+## Usage
 
-## App Factory
+### Installation
+
+**coming soon**
+
+`pip install secure_scaffold`
+
+**Not uploaded to PyPi yet so for now**:
+
+` python3 setup.py sdist bdist_wheel `
+
+Copy the `.whl` file into your project and add it into your requirements.txt
+
+
+### App Factory
 
 To use the secure scaffold in your app, use our app generator.
 
@@ -34,7 +73,7 @@ To use the secure scaffold in your app, use our app generator.
     
 This will automatically set all the needed CSP headers.
 
-## XSRF
+### XSRF
 
 To enable XSRF protection add the decorator to the endpoints you need it for.
 This needs to be set *after* the route decorator
@@ -46,9 +85,10 @@ e.g.
         return 'Hello World!'
 
 
-## Settings Config
+### Settings Config
 
 Similar to django settings, to enable multiple settings files you need to set an environment variable.
+Your folder structure should include a settings folder containing your settings files, for example:
 Your folder structure should include a settings folder containing your settings files, for example:
 
     my_project/
@@ -68,7 +108,6 @@ You can then import your settings in your project like this:
 
 
 ## Scaffold Development
-----
 
 ### Dependency Setup
 
