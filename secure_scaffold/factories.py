@@ -5,6 +5,9 @@ from secure_scaffold import xsrf
 
 
 class AppFactory:
+    """
+    Factory to generate a Flask app that includes the security config
+    """
 
     def get_name(self) -> str:
         """

@@ -1,14 +1,14 @@
-# Secure GAE Scaffold
+# Secure GAE Scaffold (Python 3)
 
 ## Introduction
 
 Please note: this is not an official Google product.
 
-This is the secure scaffold package for Google App Engine.
+This is a secure scaffold package for Google App Engine.
 
 It is built using Python 3 and Flask.
 
-Structure:
+### Structure:
 
 `secure_scaffold/` 
 - Top level directory
@@ -125,3 +125,7 @@ To run unit tests:
 
 `pytest`
 
+
+## Third Party Credits
+
+- Flask

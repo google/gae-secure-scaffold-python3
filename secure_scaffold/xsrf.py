@@ -11,9 +11,14 @@ from secure_scaffold.contrib.appengine.users import get_current_user
 
 
 class XSRFError(Exception):
+    """
+    Exception class to return JSON errors.
+    This is so we can give more information to the user
+    on why their request didn't work.
+    """
     status_code = 401
 
-    def __init__(self, message, status_code=None, payload=None):
+    def __init__(self, message: str, status_code: int = None, payload: dict = None):
         Exception.__init__(self)
         self.message = message
         if status_code is not None:
@@ -21,12 +26,23 @@ class XSRFError(Exception):
         self.payload = payload
 
     def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
+        """
+        Combine message and payload into one dict to be returned.
+        If payload is None, gives an empty dictionary.
+
+        :return: Dict with key "message" with value of message and converted payload
+        """
+        response = dict(self.payload or ())
+        response['message'] = self.message
+        return response
 
 
 def handle_xsrf_error(error):
+    """
+    Return a JSON response to the user containing the error
+    :param error: XSRFError instance
+    :return: Flask JSON response
+    """
     response = flask.jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
@@ -39,8 +55,8 @@ def xsrf_protected(non_xsrf_protected_methods: List[str] = settings.NON_XSRF_PRO
     :param non_xsrf_protected_methods: List of methods (lowercase)
                                         defaults to list from settings (get, head, options)
     """
-    def decorated(f):
-        @wraps(f)
+    def decorated(func):
+        @wraps(func)
         def decorator(*args, **kwargs):
 
             if flask.request.method.lower() in non_xsrf_protected_methods:
@@ -53,7 +69,7 @@ def xsrf_protected(non_xsrf_protected_methods: List[str] = settings.NON_XSRF_PRO
                     response.set_cookie('XSRF-TOKEN', token)
                     return response
 
-                return f(*args, **kwargs)
+                return func(*args, **kwargs)
             else:
                 # Validate XSRF token
                 token = flask.request.form.get('xsrf')
@@ -61,7 +77,7 @@ def xsrf_protected(non_xsrf_protected_methods: List[str] = settings.NON_XSRF_PRO
                     raise XSRFError("XSRF token required but not given.")
 
                 validate_xsrf_token(token)
-                return f(*args, **kwargs)
+                return func(*args, **kwargs)
 
         return decorator
     return decorated
@@ -74,10 +90,10 @@ def generate_xsrf_token():
     Add the token to the session context
     Return the serialized token to the user
     """
-    s = URLSafeTimedSerializer(flask.current_app.secret_key)
+    serializer = URLSafeTimedSerializer(flask.current_app.secret_key)
     user = get_current_user().__str__().encode('utf8')
     token = hmac.new(flask.current_app.secret_key, user, hashlib.sha1).hexdigest()
-    serialized_token = s.dumps(token)
+    serialized_token = serializer.dumps(token)
 
     flask.session['xsrf_token'] = token
     return serialized_token
@@ -90,9 +106,9 @@ def validate_xsrf_token(token):
     :param token: Token to validate (should be serialized)
     :return True/False
     """
-    s = URLSafeTimedSerializer(flask.current_app.secret_key)
+    serializer = URLSafeTimedSerializer(flask.current_app.secret_key)
     try:
-        token = s.loads(token, max_age=settings.XSRF_TIME_LIMIT)
+        token = serializer.loads(token, max_age=settings.XSRF_TIME_LIMIT)
     except SignatureExpired:
         raise XSRFError("XSRF token has expired.")
     except BadData:

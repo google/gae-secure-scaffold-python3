@@ -16,5 +16,5 @@ CSP_CONFIG = {
     'report-uri': '/csp/',
 }
 
-NON_XSRF_PROTECTED_METHODS = ['options', 'head', 'get']
+NON_XSRF_PROTECTED_METHODS = ('options', 'head', 'get')
 XSRF_TIME_LIMIT = 86400
