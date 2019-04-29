@@ -28,12 +28,13 @@ class AppFactory:
         This method is meant to be overridden in the case
         that a Flask app needs extra configuration.
 
-        By default it doesn't do anything.
+        By default it sets the app Secret Key.
 
         :param Flask app: The Flask app that requires configuring.
         :return: The configured Flask app.
         :rtype: Flask
         """
+        app.secret_key = settings.SECRET_KEY
         return app
 
     @staticmethod

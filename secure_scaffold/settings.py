@@ -18,3 +18,5 @@ CSP_CONFIG = {
 
 NON_XSRF_PROTECTED_METHODS = ('options', 'head', 'get')
 XSRF_TIME_LIMIT = 86400
+
+SECRET_KEY = os.urandom(64)

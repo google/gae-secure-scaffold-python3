@@ -2,12 +2,12 @@ from typing import List
 from functools import wraps
 import hashlib
 import hmac
+import os
 
 import flask
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 
 from secure_scaffold import settings
-from secure_scaffold.contrib.appengine.users import get_current_user
 
 
 class XSRFError(Exception):
@@ -85,17 +85,18 @@ def xsrf_protected(non_xsrf_protected_methods: List[str] = settings.NON_XSRF_PRO
 
 def generate_xsrf_token():
     """
-    Generate a token using the secret key and the user
+    Generate a token using the secret key and a random string
     We use the URLSafeTimeSerializer to check whether the token times out
     Add the token to the session context
     Return the serialized token to the user
     """
     serializer = URLSafeTimedSerializer(flask.current_app.secret_key)
-    user = get_current_user().__str__().encode('utf8')
-    token = hmac.new(flask.current_app.secret_key, user, hashlib.sha1).hexdigest()
+    random_string = os.urandom(64)
+    token = hmac.new(flask.current_app.secret_key, random_string, hashlib.sha1).hexdigest()
     serialized_token = serializer.dumps(token)
 
     flask.session['xsrf_token'] = token
+    flask.session['session_code'] = random_string
     return serialized_token
 
 

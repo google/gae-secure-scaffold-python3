@@ -80,9 +80,14 @@ This needs to be set *after* the route decorator
 e.g.
 
     @app.route('/', methods=['GET', 'POST'])
-    @xsrf.xsrf_protected
+    @xsrf.xsrf_protected()
     def index():
         return 'Hello World!'
+
+
+We use Flask Sessions for XSRF, for this you should set up a unique Secret Key for your application.
+
+A random one is set in the app factory, but you should overwrite this yourself, see [Flask Sessions](http://flask.pocoo.org/docs/1.0/quickstart/#sessions)
 
 
 ### Settings Config
@@ -106,6 +111,11 @@ You can then import your settings in your project like this:
 
     from secure_scaffold.config import settings
 
+### Users 
+
+To use the Users class you will need to enable IAP on your App Engine instance. 
+
+This is so App Engine will send the correct headers.
 
 ## Scaffold Development
 

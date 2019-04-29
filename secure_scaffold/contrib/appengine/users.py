@@ -1,3 +1,6 @@
+"""
+This only works when IAP is enabled for your App Engine instance
+"""
 try:
     import flask
 except ImportError:
