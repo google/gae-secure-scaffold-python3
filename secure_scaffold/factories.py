@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 
 from secure_scaffold import settings
@@ -19,7 +21,7 @@ class AppFactory:
         :return: The name of the application.
         :rtype: str
         """
-        return __name__.split('.')[0]
+        return os.path.split(os.getcwd())[-1]
 
     def setup_app_config(self, app: Flask) -> Flask:
         """
