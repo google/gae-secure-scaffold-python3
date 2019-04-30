@@ -21,3 +21,13 @@ def test_app_factory_adds_csp_headers():
     )
 
     assert resp.headers['Content-Security-Policy'] == expected_headers
+
+
+def test_extra_flask_args():
+    app = factories.AppFactory(static_url_path='/static').generate()
+    assert app.static_url_path == '/static'
+
+
+def test_given_flask_name():
+    app = factories.AppFactory(name='tester').generate()
+    assert app.name == 'tester'

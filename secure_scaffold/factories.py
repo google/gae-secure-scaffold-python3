@@ -11,6 +11,13 @@ class AppFactory:
     Factory to generate a Flask app that includes the security config
     """
 
+    def __init__(self, *args, name=None, **kwargs):
+        if not name:
+            name = self.get_name()
+        self.name = name
+        self.args = args
+        self.kwargs = kwargs
+
     def get_name(self) -> str:
         """
         Get the name for the Flask Application.
@@ -96,7 +103,7 @@ class AppFactory:
         :return: A Flask Application with our preferred defaults.
         :rtype: Flask
         """
-        app = Flask(self.get_name())
+        app = Flask(self.name, *self.args, **self.kwargs)
         app = self.setup_app_config(app)
         app = self.add_app_headers(app)
         app = self.add_xsrf_error_handler(app)
