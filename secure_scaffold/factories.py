@@ -2,7 +2,7 @@ import os
 
 from flask import Flask
 
-from secure_scaffold import settings
+from secure_scaffold import config
 from secure_scaffold import xsrf
 
 
@@ -43,7 +43,7 @@ class AppFactory:
         :return: The configured Flask app.
         :rtype: Flask
         """
-        app.secret_key = settings.SECRET_KEY
+        app.secret_key = config.get_setting('SECRET_KEY')
         return app
 
     @staticmethod
@@ -60,7 +60,7 @@ class AppFactory:
 
         csp_headers = '; '.join(
             f'{key} {value}'
-            for key, value in settings.CSP_CONFIG.items()
+            for key, value in config.get_setting('CSP_CONFIG').items()
         )
         response.headers['Content-Security-Policy'] = csp_headers
 
