@@ -7,7 +7,10 @@ SETTINGS_MODULE_VAR = "SETTINGS_MODULE"
 
 SETTINGS_MODULE = os.getenv(SETTINGS_MODULE_VAR)
 
-settings = importlib.import_module(SETTINGS_MODULE)
+if SETTINGS_MODULE:
+    settings = importlib.import_module(SETTINGS_MODULE)
+else:
+    settings = None
 
 
 def get_setting(name):
@@ -19,4 +22,3 @@ def get_setting(name):
         return getattr(defaults, name)
     except AttributeError:
         raise AttributeError(f'Setting "{name}"" does not exist, please define it.')
-

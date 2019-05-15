@@ -1,6 +1,8 @@
-
+import importlib
 import os
 from unittest import mock
+
+from secure_scaffold import config
 
 
 def test_import_settings():
@@ -12,5 +14,9 @@ def test_import_settings():
             'settings.development': mock_settings_module,
             'development.submodule': mock_settings_module,
     }):
-        from secure_scaffold.config import settings
-        assert settings.submodule == mock_settings_module.submodule
+        importlib.reload(config)
+        assert config.settings.submodule == mock_settings_module.submodule
+
+    os.environ['SETTINGS_MODULE'] = ''
+
+    importlib.reload(config)
