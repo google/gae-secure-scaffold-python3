@@ -30,3 +30,15 @@ NON_XSRF_PROTECTED_METHODS = ('options', 'head', 'get')
 XSRF_TIME_LIMIT = 86400
 
 SECRET_KEY = os.urandom(64)
+
+CLOUD_TASKS_BODY = {
+    'app_engine_http_request': {  # Specify the type of request.
+        'http_method': 'POST',
+        'app_engine_routing': {
+            'version': os.getenv('GAE_VERSION', 'default')
+        },
+        'headers': {
+            'Content-Type': 'application/json'
+        }
+    }
+}
