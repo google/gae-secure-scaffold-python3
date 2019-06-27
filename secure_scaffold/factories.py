@@ -1,3 +1,4 @@
+import json
 import os
 
 from flask import Flask
@@ -47,6 +48,20 @@ class AppFactory:
         return app
 
     @staticmethod
+    def add_report_to_headers(response):
+        """
+        Generate the Report-To header to be added to a response.
+
+        :param response: The response our app has generated which requires headers.
+        :return: The response with the required headers.
+        """
+
+        response.headers['Report-To'] = json.dumps(
+            config.get_setting('REPORT_TO_HEADER')
+        )
+        return response
+
+    @staticmethod
     def add_csp_headers(response):
         """
         Generate CSP Headers to be added to a response.
@@ -80,6 +95,7 @@ class AppFactory:
         :return: The Flask app with the added headers.
         :rtype: Flask
         """
+        app.after_request(self.add_report_to_headers)
         app.after_request(self.add_csp_headers)
         return app
 

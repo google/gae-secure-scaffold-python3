@@ -1,5 +1,4 @@
 import base64
-import json
 import os
 
 
@@ -25,11 +24,13 @@ CSP_CONFIG = {
     'object-src': "'none'",
     'script-src': f"'nonce-{CSP_NONCE}' 'strict-dynamic' 'unsafe-inline' https: http:",
     'report-uri': '/csp/',
-    'report-to': json.dumps({
-        'group': 'csp-endpoint',
-        'max-age': 10886400,
-        'endpoints': ['/csp/'],
-    }),
+    'report-to': 'csp-endpoint'
+}
+
+REPORT_TO_HEADER = {
+    'group': 'csp-endpoint',
+    'max-age': 10886400,
+    'endpoints': ['/csp/'],
 }
 
 NON_XSRF_PROTECTED_METHODS = ('options', 'head', 'get')

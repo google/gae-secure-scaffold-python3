@@ -8,7 +8,7 @@ with open("requirements.txt") as f:
 
 setuptools.setup(
     name="Secure Scaffold",
-    version='0.5',
+    version='0.5.1',
     packages=setuptools.find_packages(),
     install_requires=install_requires,
     author="Toaster Ltd.",
