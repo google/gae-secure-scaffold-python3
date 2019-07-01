@@ -32,7 +32,6 @@ def get_settings(setting):
 def test_create_task(mock_config, mock_client):
     mock_config.get_setting = get_settings
 
-    payload = "{'headers': 'Name', 'id: '123'}"
     uri = "/create_spreadsheet"
     path = "testpath"
 

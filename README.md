@@ -129,6 +129,76 @@ To use the Users class you will need to enable IAP on your App Engine instance.
 This is so App Engine will send the correct headers.
 
 
+### Datastore/Firestore
+
+The Secure Scaffold comes with a built in API for both Datastore and Firestore.
+
+This is a partial ORM - it allows you to simply define data models, to create, 
+retrieve, update and delete them (CRUD). However it does not work with relations
+or nested entities/documents.
+
+To use this API you must create a settings file with a variable called `DATABASE_SETTINGS`.
+This has to be a dict with two fields, an `engine` field and a `settings` field.
+
+- `engine` must reference a module with the appropriate database engine, this
+allows the code to switch between databases such as firestore and datastore with
+a single setting change.
+- `settings` are the settings that will be passed to the database engine client. As a
+minimum these should contain `project` pointing to the gcloud project.
+
+The settings should something like this:
+
+```python
+DATABASE_SETTINGS = {
+    'engine': 'secure_scaffold.contrib.db.engine.firestore',
+    'settings': {
+        'project': 'my-gcloud-project-id'
+    }
+}
+```
+
+The above uses the firestore engine. To use Datastore instead you should replace
+`secure_scaffold.contrib.db.engine.firestore` with 
+`secure_scaffold.contrib.db.engine.datastore`. There are no other code changes required.
+
+
+The API can be used like so:
+
+```python
+from secure_scaffold.contrib.db import models
+
+
+class Person(models.Model):
+    name = models.Field(str, primary=True)
+    age = models.Field(int)
+    arms = models.Field(int, default=2)
+    social_security = models.Field(str, unique=True)
+    data = models.Field(dict, required=False)
+
+
+# Create some people.
+Person(name='John', age=30, social_security='111-11-1111').save()
+Person(name='Jane', age=30, social_security='222-22-2222').save()
+
+
+janes = Person.get(name='Jane')  # Returns a generator which yields all objects with a name of 'Jane'
+for jane in janes:
+    jane.age = 28
+    jane.save()  # Updates Jane to have an age of 28 in the database.
+
+people = Person.get_all()  # Gives a generator which will yield all the people
+for person in people:
+    print(person.name)   # Prints 'John' and then 'Jane'
+    print(person.age)   # Prints 30 and then 28
+    print(person.arms)   # Prints 2 and then 2
+    person.delete()  # Deletes the entry in the database.
+```
+
+The API operates a basic validation system - you define fields within a model class,
+each field has a type and some optional args. If the field receives an object of the
+wrong type it will raise an error.
+
+
 ### Tasks
 
 The Secure Scaffold comes with a system for setting up tasks with
