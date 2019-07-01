@@ -1,0 +1,13 @@
+include AUTHORS
+include CONTRIBUTING.md
+include CONTRIBUTORS
+include dev-requirements.txt
+include LICENSE
+include MANIFEST.in
+include README.md
+include requirements.txt
+include setup.cfg
+include setup.py
+graft secure_scaffold
+global-exclude __pycache__
+global-exclude *.py[co]

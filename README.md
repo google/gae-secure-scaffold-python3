@@ -9,37 +9,6 @@ Google App Engine (although it is not limited to this).
 
 It is built using Python 3 and Flask.
 
-### Structure:
-
-`secure_scaffold/` 
-- Top level directory
-
-`secure_scaffold/contrib` 
-- Contains non-essential but useful libraries.
-- Holds several alternatives to App Engine APIs 
-which are no longer available in second generation instances 
-
-`secure_scaffold/tests` 
-- Tests for the secure scaffold 
-
-`secure_scaffold/config.py` 
-- Similar to django settings set up 
-- Looks for the "SETTINGS_MODULE" environment variable to be set 
-- See Settings Config below on how to use this
-
-`secure_scaffold/factories.py`
-- The main Flask app factory that applies the security defaults
-- See App Factory below on how to use this
-
-`secure_scaffold/settings.py`
-- Security settings 
-- Defines our CSP headers and other specifics
-
-`secure_scaffold/xsrf.py`
-- Defines XSRF decorators to be used with your flask app 
-- See XSRF below on how to use this
-
-
 The scaffold provides the following basic security guarantees by default through
 a flask app factory found in `secure_scaffold/factories.py`. This app will:
 
@@ -55,15 +24,29 @@ a flask app factory found in `secure_scaffold/factories.py`. This app will:
 
 ### Installation
 
-**coming soon**
+As this is currently in beta we have a beta pypi package.
 
-`pip install secure_scaffold`
+This project can be installed via
 
-**Not uploaded to PyPi yet so for now**:
+`pip install toaster-secure-scaffold-beta`
 
-` python3 setup.py sdist bdist_wheel `
+For your convenience we also have the option to install with various other
+dependencies for the contrib APIs such as cloud-tasks, Datastore and Firestore.
 
-Copy the `.whl` file into your project and add it into your requirements.txt
+These can be included with the `[]` syntax. For example all of them can be installed
+via:
+
+`pip install toaster-secure-scaffold-beta[datastore,firestore,tasks]`
+
+### Setup
+
+Once installed you can easily begin a new project by running:
+
+    secure_scaffold start-project PROJECT_NAME GCLOUD_PROJECT_NAME
+
+More details about this command can be found by running:
+
+    secure_scaffold start-project --help
 
 
 ### App Factory
@@ -279,6 +262,36 @@ them to the body of this request - making them accessible via the
 
 ## Scaffold Development
 
+### Structure:
+
+`secure_scaffold/` 
+- Top level directory
+
+`secure_scaffold/contrib` 
+- Contains non-essential but useful libraries.
+- Holds several alternatives to App Engine APIs 
+which are no longer available in second generation instances 
+
+`secure_scaffold/tests` 
+- Tests for the secure scaffold 
+
+`secure_scaffold/config.py` 
+- Similar to django settings set up 
+- Looks for the "SETTINGS_MODULE" environment variable to be set 
+- See Settings Config below on how to use this
+
+`secure_scaffold/factories.py`
+- The main Flask app factory that applies the security defaults
+- See App Factory below on how to use this
+
+`secure_scaffold/settings.py`
+- Security settings 
+- Defines our CSP headers and other specifics
+
+`secure_scaffold/xsrf.py`
+- Defines XSRF decorators to be used with your flask app 
+- See XSRF below on how to use this
+
 ### Dependency Setup
 
 We recommend setting up a virtual env to install dependencies:
@@ -288,6 +301,14 @@ We recommend setting up a virtual env to install dependencies:
 `source env/bin/activate`
 
 `pip install -r dev_requirements.txt`
+
+There are some extra dependencies required for the development on specific submodules.
+
+These include:
+
+- `google-cloud-firestore` for development on `secure_scaffold.contrib.db.engine.firestore
+- `google-cloud-datastore` for development on `secure_scaffold.contrib.db.engine.datastore
+- `google-cloud-tasks` for development on `secure_scaffold.contrib.cloud_tasks.tasks
 
 ### Testing
 
