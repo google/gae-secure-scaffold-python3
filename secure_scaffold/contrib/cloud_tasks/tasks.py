@@ -177,7 +177,7 @@ class TaskRunner:
         Using the given route and the URL prefix generate the path a task
         will use.
         """
-        return os.path.join(self.url_prefix, route)
+        return os.path.join(self.url_prefix, route.lstrip('/'))
 
     def task(self, route: str = None, methods: tuple = ('POST',), **kwargs) -> Callable:
         """

@@ -125,6 +125,11 @@ def test_task_runner_generate_path():
     assert runner._generate_path('test') == '/testing/test'
 
 
+def test_task_runner_generate_path_with_leading_slash():
+    runner = tasks.TaskRunner('test', 'test', url_prefix='/testing')
+    assert runner._generate_path('/test') == '/testing/test'
+
+
 @mock.patch('secure_scaffold.contrib.cloud_tasks.tasks.config')
 def test_task_runner_generate_task(mock_config):
     mock_config.get_setting = get_settings
