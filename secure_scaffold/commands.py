@@ -21,7 +21,7 @@ def cli():
 @click.option('--tasks/--no-tasks',
               default=False,
               help='Flag to show if the google-cloud-tasks system is required')
-def start_project(name, project, database, tasks):
+def start_project(name, gcloud_project, database, tasks):
     """
     This command creates a new project structure under the directory <name>.
     """
@@ -39,7 +39,7 @@ def start_project(name, project, database, tasks):
         context = {
             'DATABASE_ENGINE': f'secure_scaffold.contrib.db.engine.{database}',
             'DATABASE_CHOICE': f'{database}',
-            'GCLOUD_NAME': project,
+            'GCLOUD_NAME': gcloud_project,
             'PROJECT_NAME': name,
             'TASKS': tasks,
             'DEPENDENCIES': 1
