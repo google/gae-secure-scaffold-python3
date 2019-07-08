@@ -5,6 +5,9 @@ from unittest import mock
 import pytest
 
 
+pytestmark = pytest.mark.modelstest
+
+
 @pytest.fixture(params=[
     'secure_scaffold.contrib.db.engine.datastore',
     'secure_scaffold.contrib.db.engine.firestore',

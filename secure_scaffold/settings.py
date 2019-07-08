@@ -38,6 +38,10 @@ XSRF_TIME_LIMIT = 86400
 
 SECRET_KEY = os.urandom(64)
 
+AUTH_TEMPLATE_FOLDER = os.path.join(
+    os.path.dirname(__file__), 'contrib/users/templates'
+)
+
 CLOUD_TASKS_BODY = {
     'app_engine_http_request': {  # Specify the type of request.
         'http_method': 'POST',

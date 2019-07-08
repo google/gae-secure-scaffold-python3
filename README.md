@@ -105,11 +105,99 @@ You can then import your settings in your project like this:
 
     from secure_scaffold.config import settings
 
-### Users 
 
-To use the Users class you will need to enable IAP on your App Engine instance. 
+### Authentication
 
-This is so App Engine will send the correct headers.
+The Secure Scaffold provides two methods of authentication. One is an in built
+authentication system relying on Googles OAuth2 system. The alternative is a system relying on IAP
+
+#### OAuth2 Users
+
+Second generation App Engine systems have had the Users API removed so the majority of
+the original functionality isn't available. As a result it is now recommended to use
+separate systems such as Googles OAuth2. The Secure Scaffold provides a wrapper for this
+based heavily on [this guide](https://developers.google.com/identity/sign-in/web/sign-in).
+
+For this to work there is some minimal setup.
+
+The first is to provide an OAuth Client ID. To do this go to the GCloud console and create
+an OAuth Client ID [here](https://console.cloud.google.com/apis/credentials). Ensure you add
+the domains you are using to the `Authorised JavaScript Origins` and `Authorised redirect URIs`.
+You can include `localhost:5000` in these to enable using this system in development.
+
+Once you have a `Client ID` add it to your settings file like so:
+
+```python
+AUTH_OAUTH_CLIENT_ID = 'my-client-id'
+```
+
+Once done all that is required is to register the auth blueprint to your project like so:
+
+```python
+from secure_scaffold import factories
+from secure_scaffold.contrib.users.auth import auth_handler
+
+    
+app = factories.AppFactory().generate()
+app.register_blueprint(auth_handler.blueprint)
+```
+
+This creates two enpoints at `/auth/login` and `/auth/authenticate`. Login provides a frontend
+with a Google sign in button. This sends an API request to `/auth/authenticate` which validates
+the login procedure and returns an endpoint to redirect to. By default this is `/`.
+
+If you want to force a user to be logged in to access a URL you can use the provided
+`requires_login` decorator like so:
+
+```python
+from secure_scaffold import factories
+from secure_scaffold.contrib.users.auth import auth_handler
+
+    
+app = factories.AppFactory().generate()
+app.register_blueprint(auth_handler.blueprint)
+
+
+@app.route('/')
+@auth_handler.requires_login
+def private_view():
+    return "You can't see this unless you are logged in."
+```
+
+If a user is logged in they will be able to see the page. If they are not they will
+automatically be redirected to `/auth/login`.
+
+##### Extending the OAuth2 system.
+
+The OAuth2 system is built using a class at `secure_scaffold.contrib.users.auth.AuthHandler`.
+
+This class is designed to be easy to subclass and override. For instance if you wanted to
+change the URL which the user is redirected to on logging in you can do it like so:
+
+```python
+from secure_scaffold import factories
+from secure_scaffold.contrib.users.auth import AuthHandler
+
+app = factories.AppFactory().generate()
+
+class MyAuthHandler(AuthHandler):
+    redirect_url = '/after-login'
+
+auth_handler = MyAuthHandler()
+app.register_blueprint(auth_handler.blueprint)
+```
+
+#### IAP Users
+
+This is available at `secure_scaffold.contrib.appengine.users`. It provides a `User`
+class which has a few useful methods providing the details of the current user.
+It also provides `requires_auth` and `requires_admin` decorators which enforce the need
+for authentication and admin rights respectively on the views they are applied to.
+
+These work almost identically to how they do in the first generation App Engine APIs.
+
+To use these you will need to enable IAP on your App Engine instance. This is 
+provides the app with the correct headers for this functionality.
 
 
 ### Datastore/Firestore
