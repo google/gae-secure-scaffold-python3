@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="Toaster Secure Scaffold Beta",
+    name="Toaster Secure Scaffold RC",
     version='0.8.1',
     packages=setuptools.find_packages(),
     install_requires=install_requires,
