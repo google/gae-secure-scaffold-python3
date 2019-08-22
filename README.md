@@ -28,7 +28,7 @@ As this is currently in beta we have a beta pypi package.
 
 This project can be installed via
 
-`pip install toaster-secure-scaffold-beta`
+`pip install toaster-secure-scaffold-rc`
 
 For your convenience we also have the option to install with various other
 dependencies for the contrib APIs such as cloud-tasks, Datastore and Firestore.
@@ -36,7 +36,7 @@ dependencies for the contrib APIs such as cloud-tasks, Datastore and Firestore.
 These can be included with the `[]` syntax. For example all of them can be installed
 via:
 
-`pip install toaster-secure-scaffold-beta[datastore,firestore,tasks]`
+`pip install toaster-secure-scaffold-rc[datastore,firestore,tasks]`
 
 ### Setup
 
