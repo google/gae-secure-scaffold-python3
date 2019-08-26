@@ -2,18 +2,18 @@ import base64
 import os
 
 
-NONCE_LENGTH = 10
+NONCE_LENGTH = 16
 
 
 def generate_nonce() -> str:
     """
     Generate a nonce for CSP purposes.
 
-    Python URL Safe base64 encoding adds "=" as padding
+    Python base64 encoding adds "=" as padding
     to the text - this is unsafe for CSP purposes so we strip
     it out.
     """
-    b64_str = base64.urlsafe_b64encode(os.urandom(NONCE_LENGTH))
+    b64_str = base64.b64encode(os.urandom(NONCE_LENGTH))
     return b64_str.decode().rstrip('=')
 
 
