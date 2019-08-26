@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Toaster Secure Scaffold RC",
-    version='0.8.1',
+    version='0.8.2',
     packages=setuptools.find_packages(),
     install_requires=install_requires,
     extras_require={
