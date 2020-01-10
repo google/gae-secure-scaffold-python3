@@ -1,0 +1,25 @@
+# Configuration for a website consisting only of static files.
+# https://cloud.google.com/appengine/docs/standard/python3/config/appref
+
+runtime: python37
+
+handlers:
+
+  - url: /(.*/)?$
+    static_files: dist/\1index.html
+    upload: dist/.*index.html
+    secure: always
+    http_headers:
+      Strict-Transport-Security: "max-age=2592000; includeSubdomains"
+      X-Content-Type-Options: "nosniff"
+      X-Frame-Options: "DENY"
+      X-XSS-Protection: "1; mode=block"
+
+  - url: /.*
+    static_dir: dist
+    secure: always
+    http_headers:
+      Strict-Transport-Security: "max-age=2592000; includeSubdomains"
+      X-Content-Type-Options: "nosniff"
+      X-Frame-Options: "DENY"
+      X-XSS-Protection: "1; mode=block"
