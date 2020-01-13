@@ -14,8 +14,6 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=install_requires,
     extras_require={
-        'firestore': ['google-cloud-firestore==1.2.0'],
-        'datastore': ['google-cloud-datastore==1.8.0'],
         'tasks': ['google-cloud-tasks==1.1.0'],
     },
     include_package_data=True,

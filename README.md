@@ -31,12 +31,12 @@ This project can be installed via
 `pip install toaster-secure-scaffold-rc`
 
 For your convenience we also have the option to install with various other
-dependencies for the contrib APIs such as cloud-tasks, Datastore and Firestore.
+dependencies for the contrib APIs such as cloud-tasks.
 
 These can be included with the `[]` syntax. For example all of them can be installed
 via:
 
-`pip install toaster-secure-scaffold-rc[datastore,firestore,tasks]`
+`pip install toaster-secure-scaffold-rc[tasks]`
 
 ### Setup
 
@@ -55,10 +55,10 @@ To use the secure scaffold in your app, use our app generator.
 
 ```python
 from secure_scaffold import factories
-    
+
 app = factories.AppFactory().generate()
 ```
-    
+
 This will automatically set all the needed CSP headers.
 
 ### XSRF
@@ -70,7 +70,7 @@ e.g.
 ```python
 from secure_scaffold import factories
 from secure_scaffold import xsrf
-    
+
 app = factories.AppFactory().generate()
 
 @app.route('/', methods=['GET', 'POST'])
@@ -96,11 +96,11 @@ Your folder structure should include a settings folder containing your settings 
             base.py
             development.py
             production.py
-            
+
 You should then set the environment variable (**SETTINGS_MODULE**) to the settings you require in that environment.
 
     export SETTINGS_MODULE=settings.development
-    
+
 You can then import your settings in your project like this:
 
     from secure_scaffold.config import settings
@@ -137,7 +137,7 @@ Once done all that is required is to register the auth blueprint to your project
 from secure_scaffold import factories
 from secure_scaffold.contrib.users.auth import auth_handler
 
-    
+
 app = factories.AppFactory().generate()
 app.register_blueprint(auth_handler.blueprint)
 ```
@@ -153,7 +153,7 @@ If you want to force a user to be logged in to access a URL you can use the prov
 from secure_scaffold import factories
 from secure_scaffold.contrib.users.auth import auth_handler
 
-    
+
 app = factories.AppFactory().generate()
 app.register_blueprint(auth_handler.blueprint)
 
@@ -196,78 +196,8 @@ for authentication and admin rights respectively on the views they are applied t
 
 These work almost identically to how they do in the first generation App Engine APIs.
 
-To use these you will need to enable IAP on your App Engine instance. This is 
+To use these you will need to enable IAP on your App Engine instance. This is
 provides the app with the correct headers for this functionality.
-
-
-### Datastore/Firestore
-
-The Secure Scaffold comes with a built in API for both Datastore and Firestore.
-
-This is a partial ORM - it allows you to simply define data models, to create, 
-retrieve, update and delete them (CRUD). However it does not work with relations
-or nested entities/documents.
-
-To use this API you must create a settings file with a variable called `DATABASE_SETTINGS`.
-This has to be a dict with two fields, an `engine` field and a `settings` field.
-
-- `engine` must reference a module with the appropriate database engine, this
-allows the code to switch between databases such as firestore and datastore with
-a single setting change.
-- `settings` are the settings that will be passed to the database engine client. As a
-minimum these should contain `project` pointing to the gcloud project.
-
-The settings should something like this:
-
-```python
-DATABASE_SETTINGS = {
-    'engine': 'secure_scaffold.contrib.db.engine.firestore',
-    'settings': {
-        'project': 'my-gcloud-project-id'
-    }
-}
-```
-
-The above uses the firestore engine. To use Datastore instead you should replace
-`secure_scaffold.contrib.db.engine.firestore` with 
-`secure_scaffold.contrib.db.engine.datastore`. There are no other code changes required.
-
-
-The API can be used like so:
-
-```python
-from secure_scaffold.contrib.db import models
-
-
-class Person(models.Model):
-    name = models.Field(str, primary=True)
-    age = models.Field(int)
-    arms = models.Field(int, default=2)
-    social_security = models.Field(str, unique=True)
-    data = models.Field(dict, required=False)
-
-
-# Create some people.
-Person(name='John', age=30, social_security='111-11-1111').save()
-Person(name='Jane', age=30, social_security='222-22-2222').save()
-
-
-janes = Person.get(name='Jane')  # Returns a generator which yields all objects with a name of 'Jane'
-for jane in janes:
-    jane.age = 28
-    jane.save()  # Updates Jane to have an age of 28 in the database.
-
-people = Person.get_all()  # Gives a generator which will yield all the people
-for person in people:
-    print(person.name)   # Prints 'John' and then 'Jane'
-    print(person.age)   # Prints 30 and then 28
-    print(person.arms)   # Prints 2 and then 2
-    person.delete()  # Deletes the entry in the database.
-```
-
-The API operates a basic validation system - you define fields within a model class,
-each field has a type and some optional args. If the field receives an object of the
-wrong type it will raise an error.
 
 
 ### Tasks
@@ -281,6 +211,7 @@ as `Task` objects using a decorator provided by the `TaskRunner` instance.
 This creates a view in a [Flask blueprint](http://flask.pocoo.org/docs/dev/blueprints/)
 stored in the `TaskRunner` instance and adds a `delay` method to the registered
 function - allowing the function to be run later by the task queue.
+
 
 #### Setup
 
@@ -309,7 +240,7 @@ from flask import request
 from secure_scaffold import factories
 from secure_scaffold.contrib.cloud_tasks import tasks
 
-    
+
 app = factories.AppFactory().generate()
 
 task_runner = tasks.TaskRunner('tasks', __name__, url_prefix='/tasks')
@@ -345,27 +276,27 @@ containing this function and a `delay` method. It then registers the object
 as a flask route at `/tasks/print_task/`. The `Task` objects delay method
 makes a request to the cloud tasks API to create a task for this method in
 the queue. It takes any arbitrary arguments and keyword arguments and adds
-them to the body of this request - making them accessible via the 
-`flask.request` global variable within the task. 
+them to the body of this request - making them accessible via the
+`flask.request` global variable within the task.
 
 ## Scaffold Development
 
 ### Structure:
 
-`secure_scaffold/` 
+`secure_scaffold/`
 - Top level directory
 
-`secure_scaffold/contrib` 
+`secure_scaffold/contrib`
 - Contains non-essential but useful libraries.
-- Holds several alternatives to App Engine APIs 
-which are no longer available in second generation instances 
+- Holds several alternatives to App Engine APIs
+which are no longer available in second generation instances
 
-`secure_scaffold/tests` 
-- Tests for the secure scaffold 
+`secure_scaffold/tests`
+- Tests for the secure scaffold
 
-`secure_scaffold/config.py` 
-- Similar to django settings set up 
-- Looks for the "SETTINGS_MODULE" environment variable to be set 
+`secure_scaffold/config.py`
+- Similar to django settings set up
+- Looks for the "SETTINGS_MODULE" environment variable to be set
 - See Settings Config below on how to use this
 
 `secure_scaffold/factories.py`
@@ -373,11 +304,11 @@ which are no longer available in second generation instances
 - See App Factory below on how to use this
 
 `secure_scaffold/settings.py`
-- Security settings 
+- Security settings
 - Defines our CSP headers and other specifics
 
 `secure_scaffold/xsrf.py`
-- Defines XSRF decorators to be used with your flask app 
+- Defines XSRF decorators to be used with your flask app
 - See XSRF below on how to use this
 
 ### Dependency Setup
@@ -394,15 +325,14 @@ There are some extra dependencies required for the development on specific submo
 
 These include:
 
-- `google-cloud-firestore` for development on `secure_scaffold.contrib.db.engine.firestore
-- `google-cloud-datastore` for development on `secure_scaffold.contrib.db.engine.datastore
-- `google-cloud-tasks` for development on `secure_scaffold.contrib.cloud_tasks.tasks
+- `google-cloud-tasks` for development on `secure_scaffold.contrib.cloud_tasks.tasks`
+
 
 ### Testing
 
-To run unit tests:
+To run tests:
 
-`pytest`
+    pytest
 
 
 ## Third Party Credits
