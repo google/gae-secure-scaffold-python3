@@ -38,15 +38,15 @@ via:
 
 `pip install toaster-secure-scaffold-rc[tasks]`
 
-### Setup
 
-Once installed you can easily begin a new project by running:
+### Starting a new project
 
-    secure_scaffold start-project PROJECT_NAME GCLOUD_PROJECT_NAME
+Install the Cookiecutter utility. Then create a new empty project:
 
-More details about this command can be found by running:
+    pip install cookiecutter
+    cookiecutter https://github.com/davidwtbuxton/gae-secure-scaffold-python
 
-    secure_scaffold start-project --help
+This prompts for the App Engine project name and creates a directory with that name. Inside the directory is the skeleton of a basic app for Python 3 on App Engine standard.
 
 
 ### App Factory
@@ -60,6 +60,7 @@ app = factories.AppFactory().generate()
 ```
 
 This will automatically set all the needed CSP headers.
+
 
 ### XSRF
 
