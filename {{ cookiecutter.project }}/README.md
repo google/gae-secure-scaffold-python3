@@ -1,21 +1,17 @@
-#{{ PROJECT_NAME }}
+# {{ cookiecutter.project }}
 
 A Secure Scaffold project.
 
 ## Setup
 
-To run this project locally setup a python3 virtual env
-and install the dependencies.
+Create a new Python 3 virtual env and install the dependencies:
 
-For example if you use standard virtualenv run:
-
-    virtualenv env -p python3
-    source env/bin/activate
+    python3 -m venv venv
+    source venv/bin/activate
     pip install -r requirements.txt
 
-Once done all you need to do is run:
+Then you can start the development server:
 
     python main.py
 
-and go to [localhost:5000](localhost:5000) to see the result.
-
+And go to [localhost:5000](localhost:5000) to see the result.

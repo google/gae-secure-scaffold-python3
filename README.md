@@ -44,7 +44,7 @@ via:
 Install the Cookiecutter utility. Then create a new empty project:
 
     pip install cookiecutter
-    cookiecutter https://github.com/davidwtbuxton/gae-secure-scaffold-python
+    cookiecutter https://github.com/davidwtbuxton/gae-secure-scaffold-python.git --checkout py37-scaffold
 
 This prompts for the App Engine project name and creates a directory with that name. Inside the directory is the skeleton of a basic app for Python 3 on App Engine standard.
 
