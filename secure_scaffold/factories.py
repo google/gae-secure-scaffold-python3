@@ -1,10 +1,19 @@
 import json
 import os
+import secrets
 
 from flask import Flask
+from google.cloud import ndb
 
 from secure_scaffold import config
 from secure_scaffold import xsrf
+
+
+class AppConfig(ndb.Model):
+    SINGLETON_NAME = 'config'
+
+    secret_key = ndb.StringProperty()
+    created = ndb.DateTimeProperty(auto_now_add=True)
 
 
 class AppFactory:
@@ -44,8 +53,32 @@ class AppFactory:
         :return: The configured Flask app.
         :rtype: Flask
         """
-        app.secret_key = config.get_setting('SECRET_KEY')
+        app.config.from_object('secure_scaffold.settings')
+        app.config.from_envvar('FLASK_SETTINGS_MODULE', silent=True)
+
+        if not app.config['SECRET_KEY']:
+            config = self.get_config_from_datastore()
+            app.config['SECRET_KEY'] = config.secret_key
+
         return app
+
+    @classmethod
+    def get_config_from_datastore(cls) -> AppConfig:
+        config = cls.default_datastore_config()
+        client = ndb.Client()
+
+        with client.context():
+            obj = AppConfig.get_or_insert(AppConfig.SINGLETON_NAME, **config)
+
+        return obj
+
+    @classmethod
+    def default_datastore_config(cls) -> dict:
+        config = {
+            'secret_key': secrets.token_hex(16),
+        }
+
+        return config
 
     @staticmethod
     def add_report_to_headers(response):

@@ -36,8 +36,6 @@ REPORT_TO_HEADER = {
 NON_XSRF_PROTECTED_METHODS = ('options', 'head', 'get')
 XSRF_TIME_LIMIT = 86400
 
-SECRET_KEY = os.urandom(64)
-
 AUTH_TEMPLATE_FOLDER = os.path.join(
     os.path.dirname(__file__), 'contrib/users/templates'
 )

@@ -86,25 +86,24 @@ We use Flask Sessions for XSRF, for this you should set up a unique Secret Key f
 A random one is set in the app factory, but you should overwrite this yourself, see [Flask Sessions](http://flask.pocoo.org/docs/1.0/quickstart/#sessions)
 
 
-### Settings Config
+### Configuring Flask and the SECRET_KEY setting
 
-Similar to django settings, to enable multiple settings files you need to set an environment variable.
-Your folder structure should include a settings folder containing your settings files, for example:
+Set the environment variable FLASK_SETTINGS_MODULE to the dotted path name of a Python module. Configuration defaults are loaded from "secure_scaffold.settings". The configuration is loaded when you create the Flask application.
 
-    my_project/
-        settings/
-            __init__.py
-            base.py
-            development.py
-            production.py
+To customize settings, create a Python module that overrides the default settings, and point FLASK_SETTINGS_MODULE to the module name. For example, here's how you can change the name for the session cookie created by Flask:
 
-You should then set the environment variable (**SETTINGS_MODULE**) to the settings you require in that environment.
+    # myappconfig.py
+    SESSION_COOKIE_NAME = 'myapp_session'
 
-    export SETTINGS_MODULE=settings.development
+Then set the FLASK_SETTINGS_MODULE:
 
-You can then import your settings in your project like this:
+    # app.yaml
+    runtime: python37
 
-    from secure_scaffold.config import settings
+    env_variables:
+      FLASK_SETTINGS_MODULE = "myappconfig"
+
+The SECRET_KEY setting is read from the datastore when the application starts. If there is no setting, a random key is created and saved.
 
 
 ### Authentication
