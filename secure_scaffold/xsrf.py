@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from functools import wraps
 import hashlib
 import hmac
@@ -6,8 +6,6 @@ import os
 
 import flask
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
-
-from secure_scaffold import config
 
 
 class XSRFError(Exception):
@@ -48,13 +46,17 @@ def handle_xsrf_error(error):
     return response
 
 
-def xsrf_protected(non_xsrf_protected_methods: List[str] = config.get_setting('NON_XSRF_PROTECTED_METHODS')):
+def xsrf_protected(non_xsrf_protected_methods: Optional[List[str]] = None):
     """
     Decorator to validate XSRF tokens for any methods but GET, HEAD, OPTIONS.
 
     :param non_xsrf_protected_methods: List of methods (lowercase)
                                         defaults to list from settings (get, head, options)
     """
+    if non_xsrf_protected_methods is None:
+        config = flask.current_app.config
+        non_xsrf_protected_methods = config['NON_XSRF_PROTECTED_METHODS']
+
     def decorated(func):
         @wraps(func)
         def decorator(*args, **kwargs):
@@ -108,8 +110,10 @@ def validate_xsrf_token(token):
     :return True/False
     """
     serializer = URLSafeTimedSerializer(flask.current_app.secret_key)
+    config = flask.current_app.config
+
     try:
-        token = serializer.loads(token, max_age=config.get_setting('XSRF_TIME_LIMIT'))
+        token = serializer.loads(token, max_age=config['XSRF_TIME_LIMIT'])
     except SignatureExpired:
         raise XSRFError("XSRF token has expired.")
     except BadData:

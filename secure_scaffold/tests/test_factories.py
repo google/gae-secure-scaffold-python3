@@ -6,13 +6,13 @@ from flask import Flask
 from google.cloud import ndb
 
 from secure_scaffold import factories, settings
-from secure_scaffold import utils
+from secure_scaffold import emulator
 
 
 @pytest.fixture(scope="session")
 def datastore():
     """Start and stop the datastore emulator."""
-    with utils.DatastoreEmulatorForTests():
+    with emulator.DatastoreEmulatorForTests():
         yield
 
 

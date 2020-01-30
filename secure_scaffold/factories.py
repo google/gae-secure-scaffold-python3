@@ -3,11 +3,10 @@ import os
 import secrets
 from typing import Optional
 
-from flask import Flask
+import flask
 from google.cloud import ndb
 
-from secure_scaffold import config
-from secure_scaffold import xsrf
+from . import xsrf
 
 
 class AppConfig(ndb.Model):
@@ -41,7 +40,7 @@ class AppFactory:
         """
         return os.path.split(os.getcwd())[-1]
 
-    def setup_app_config(self, app: Flask, overrides: Optional[dict] = None) -> Flask:
+    def setup_app_config(self, app: flask.Flask, overrides: Optional[dict] = None) -> flask.Flask:
         """
         Setup the configuration for the Flask app.
 
@@ -94,10 +93,9 @@ class AppFactory:
         :param response: The response our app has generated which requires headers.
         :return: The response with the required headers.
         """
+        config = flask.current_app.config
+        response.headers['Report-To'] = json.dumps(config['REPORT_TO_HEADER'])
 
-        response.headers['Report-To'] = json.dumps(
-            config.get_setting('REPORT_TO_HEADER')
-        )
         return response
 
     @staticmethod
@@ -111,16 +109,16 @@ class AppFactory:
         :param response: The response our app has generated which requires headers.
         :return: The response with the required headers.
         """
-
+        config = flask.current_app.config
         csp_headers = '; '.join(
             f'{key} {value}'
-            for key, value in config.get_setting('CSP_CONFIG').items()
+            for key, value in config['CSP_CONFIG'].items()
         )
         response.headers['Content-Security-Policy'] = csp_headers
 
         return response
 
-    def add_app_headers(self, app: Flask) -> Flask:
+    def add_app_headers(self, app: flask.Flask) -> flask.Flask:
         """
         Add app specific headers to every response.
 
@@ -138,7 +136,7 @@ class AppFactory:
         app.after_request(self.add_csp_headers)
         return app
 
-    def add_xsrf_error_handler(self, app: Flask) -> Flask:
+    def add_xsrf_error_handler(self, app: flask.Flask) -> flask.Flask:
         """
         Add the xsrf error handler to the app.
 
@@ -151,7 +149,7 @@ class AppFactory:
         app.register_error_handler(xsrf.XSRFError, xsrf.handle_xsrf_error)
         return app
 
-    def generate(self, overrides: Optional[dict] = None) -> Flask:
+    def generate(self, overrides: Optional[dict] = None) -> flask.Flask:
         """
         Generate a Flask application with our preferred defaults.
 
@@ -159,7 +157,7 @@ class AppFactory:
         :return: A Flask Application with our preferred defaults.
         :rtype: Flask
         """
-        app = Flask(self.name, *self.args, **self.kwargs)
+        app = flask.Flask(self.name, *self.args, **self.kwargs)
         app = self.setup_app_config(app, overrides)
         app = self.add_app_headers(app)
         app = self.add_xsrf_error_handler(app)
