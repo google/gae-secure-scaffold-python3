@@ -14,6 +14,11 @@ handlers:
       X-Content-Type-Options: "nosniff"
       X-Frame-Options: "DENY"
       X-XSS-Protection: "1; mode=block"
+      Content-Security-Policy:
+        base-uri 'none';
+        object-src 'none';
+        script-src 'self'
+          https://www.google-analytics.com/analytics.js;
 
   - url: /.*
     static_dir: dist
@@ -23,3 +28,8 @@ handlers:
       X-Content-Type-Options: "nosniff"
       X-Frame-Options: "DENY"
       X-XSS-Protection: "1; mode=block"
+      Content-Security-Policy:
+        base-uri 'none';
+        object-src 'none';
+        script-src 'self'
+          https://www.google-analytics.com/analytics.js;

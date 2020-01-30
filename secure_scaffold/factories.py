@@ -1,6 +1,7 @@
 import json
 import os
 import secrets
+from typing import Optional
 
 from flask import Flask
 from google.cloud import ndb
@@ -10,7 +11,7 @@ from secure_scaffold import xsrf
 
 
 class AppConfig(ndb.Model):
-    SINGLETON_NAME = 'config'
+    SINGLETON_ID = 'config'
 
     secret_key = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
@@ -40,7 +41,7 @@ class AppFactory:
         """
         return os.path.split(os.getcwd())[-1]
 
-    def setup_app_config(self, app: Flask) -> Flask:
+    def setup_app_config(self, app: Flask, overrides: Optional[dict] = None) -> Flask:
         """
         Setup the configuration for the Flask app.
 
@@ -50,11 +51,15 @@ class AppFactory:
         By default it sets the app Secret Key.
 
         :param Flask app: The Flask app that requires configuring.
+        :param overrides: additional configuration keys / values.
         :return: The configured Flask app.
         :rtype: Flask
         """
         app.config.from_object('secure_scaffold.settings')
         app.config.from_envvar('FLASK_SETTINGS_MODULE', silent=True)
+
+        if overrides:
+            app.config.update(overrides)
 
         if not app.config['SECRET_KEY']:
             config = self.get_config_from_datastore()
@@ -64,18 +69,19 @@ class AppFactory:
 
     @classmethod
     def get_config_from_datastore(cls) -> AppConfig:
+        # This happens at application startup, so we use a new NDB context.
         config = cls.default_datastore_config()
         client = ndb.Client()
 
         with client.context():
-            obj = AppConfig.get_or_insert(AppConfig.SINGLETON_NAME, **config)
+            obj = AppConfig.get_or_insert(AppConfig.SINGLETON_ID, **config)
 
         return obj
 
     @classmethod
     def default_datastore_config(cls) -> dict:
         config = {
-            'secret_key': secrets.token_hex(16),
+            'secret_key': secrets.token_urlsafe(16),
         }
 
         return config
@@ -145,15 +151,16 @@ class AppFactory:
         app.register_error_handler(xsrf.XSRFError, xsrf.handle_xsrf_error)
         return app
 
-    def generate(self) -> Flask:
+    def generate(self, overrides: Optional[dict] = None) -> Flask:
         """
         Generate a Flask application with our preferred defaults.
 
+        :param overrides: additional configuration keys / values.
         :return: A Flask Application with our preferred defaults.
         :rtype: Flask
         """
         app = Flask(self.name, *self.args, **self.kwargs)
-        app = self.setup_app_config(app)
+        app = self.setup_app_config(app, overrides)
         app = self.add_app_headers(app)
         app = self.add_xsrf_error_handler(app)
 

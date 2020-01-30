@@ -8,7 +8,8 @@ from itsdangerous import URLSafeTimedSerializer
 
 from secure_scaffold import xsrf, settings, factories
 
-app = factories.AppFactory().generate()
+
+app = factories.AppFactory().generate({'SECRET_KEY': 'secret'})
 
 
 @pytest.fixture

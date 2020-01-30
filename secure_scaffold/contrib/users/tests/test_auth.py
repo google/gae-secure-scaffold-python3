@@ -25,7 +25,7 @@ def app(_patched_settings) -> Flask:
     from secure_scaffold.factories import AppFactory
     from secure_scaffold.contrib.users.auth import auth_blueprint
 
-    app = AppFactory().generate()
+    app = AppFactory().generate({'SECRET_KEY': 'secret'})
 
     app.register_blueprint(auth_blueprint)
 

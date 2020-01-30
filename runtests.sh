@@ -3,8 +3,6 @@ set -o errexit -o nounset
 
 PROJECT="scaffold-tests"
 
-trap "kill 0" EXIT
-
 # Set --host-port to work around bug with NDB unable to connect to ::1.
 gcloud beta emulators datastore start \
     --project "$PROJECT" \
@@ -13,10 +11,11 @@ gcloud beta emulators datastore start \
     --host-port localhost \
     &
 
-sleep 5
-
+sleep 2
 $(gcloud beta emulators datastore env-init)
 
+# The actual test runner.
 pytest
 
-wait
+# Clean up the datastore emulator.
+curl -X POST "$DATASTORE_HOST/shutdown"
