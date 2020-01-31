@@ -1,9 +1,10 @@
+import os
+
 import flask
+import secure_scaffold
 
-from secure_scaffold import factories
 
-
-app = factories.AppFactory(__name__).generate()
+app = secure_scaffold.create_app(__name__)
 
 
 @app.route('/')

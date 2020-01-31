@@ -44,34 +44,12 @@ This prompts for the App Engine project name and creates a directory with that n
 To use the secure scaffold in your app, use our app generator.
 
 ```python
-from secure_scaffold import factories
+import secure_scaffold
 
-app = factories.AppFactory().generate()
+app = secure_scaffold.create_app()
 ```
 
 This will automatically set all the needed CSP headers.
-
-
-### XSRF
-
-To enable XSRF protection add the decorator to the endpoints you need it for.
-This needs to be set *after* the route decorator
-e.g.
-
-```python
-from secure_scaffold import factories
-from secure_scaffold import xsrf
-
-app = factories.AppFactory().generate()
-
-@app.route('/', methods=['GET', 'POST'])
-@xsrf.xsrf_protected()
-def index():
-    return 'Hello World!'
-```
-
-
-We use Flask Sessions for XSRF. A random SECRET_KEY is created and saved to the datastore.
 
 
 ### Configuring Flask and the SECRET_KEY setting
@@ -121,9 +99,8 @@ which are no longer available in second generation instances
 `secure_scaffold/tests`
 - Tests for the secure scaffold
 
-`secure_scaffold/factories.py`
+`secure_scaffold/factory.py`
 - The main Flask app factory that applies the security defaults
-- See App Factory below on how to use this
 
 `secure_scaffold/settings.py`
 - Security settings

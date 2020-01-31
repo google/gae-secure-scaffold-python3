@@ -1,7 +1,7 @@
-from secure_scaffold import factories
+import secure_scaffold
 
 
-app = factories.AppFactory(__name__).generate()
+app = secure_scaffold.create_app()
 
 
 @app.route('/')
