@@ -76,20 +76,20 @@ We use Flask Sessions for XSRF. A random SECRET_KEY is created and saved to the 
 
 ### Configuring Flask and the SECRET_KEY setting
 
-Set the environment variable FLASK_SETTINGS_MODULE to the dotted path name of a Python module. Configuration defaults are loaded from "secure_scaffold.settings". The configuration is loaded when you create the Flask application.
+Set the environment variable FLASK_SETTINGS_FILENAME to the name of a Python file. Configuration defaults are loaded from "secure_scaffold.settings". The configuration is loaded when you create the Flask application.
 
-To customize settings, create a Python module that overrides the default settings, and point FLASK_SETTINGS_MODULE to the module name. For example, here's how you can change the name for the session cookie created by Flask:
+To customize settings, create a Python module that overrides the default settings, and point FLASK_SETTINGS_FILENAME to the file name. For example, here's how you can change the name for the session cookie created by Flask:
 
     # myappconfig.py
     SESSION_COOKIE_NAME = 'myapp_session'
 
-Then set the FLASK_SETTINGS_MODULE:
+Then set the FLASK_SETTINGS_FILENAME:
 
     # app.yaml
     runtime: python37
 
     env_variables:
-      FLASK_SETTINGS_MODULE = "myappconfig"
+      FLASK_SETTINGS_FILENAME = "myappconfig.py"
 
 The SECRET_KEY setting is read from the datastore when the application starts. If there is no setting, a random key is created and saved.
 

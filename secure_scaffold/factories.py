@@ -38,7 +38,7 @@ class AppFactory:
         :return: None
         """
         app.config.from_object('secure_scaffold.settings')
-        app.config.from_envvar('FLASK_SETTINGS_MODULE', silent=True)
+        app.config.from_envvar("FLASK_SETTINGS_FILENAME", silent=True)
 
         if overrides:
             app.config.update(overrides)

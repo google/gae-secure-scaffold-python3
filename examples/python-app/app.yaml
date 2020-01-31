@@ -19,3 +19,6 @@ handlers:
   - url: /.*
     script: auto
     secure: always
+
+env_variables:
+  FLASK_SETTINGS_FILENAME: "conf.py"
