@@ -1,2 +1,4 @@
 Flask
+flask-talisman
+flask-seasurf
 google-cloud-ndb

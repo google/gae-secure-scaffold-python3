@@ -13,9 +13,6 @@ setuptools.setup(
     version='0.8.2',
     packages=setuptools.find_packages(),
     install_requires=install_requires,
-    extras_require={
-        'tasks': ['google-cloud-tasks==1.1.0'],
-    },
     include_package_data=True,
     author="Toaster Ltd.",
     author_email="developers@toaster.co",

@@ -22,6 +22,7 @@ class DatastoreEmulator:
         host_port=None,
         store_on_disk=None,
         project=None,
+        quiet=True,
         environ=os.environ,
     ):
         self.consistency = consistency
@@ -29,6 +30,7 @@ class DatastoreEmulator:
         self.host_port = host_port or self.default_host_port
         self.store_on_disk = store_on_disk
         self.project = project or self.default_project
+        self.quiet = quiet
         self.environ = environ
         self._proc = None
         self._env = {}
@@ -44,6 +46,12 @@ class DatastoreEmulator:
             "--project",
             self.project,
         ]
+
+        # Special case for --quiet, which needs to come before the sub-command.
+        # If quiet is True, and you don't have the beta commands, they get
+        # installed automatically.
+        if self.quiet:
+            args.insert(1, "--quiet")
 
         # And optional emulator flags.
         for name in ("data_dir", "host_port", "store_on_disk", "consistency"):
@@ -79,7 +87,9 @@ class DatastoreEmulator:
     @classmethod
     def _parse_startup(cls, fh, project: str):
         # Reading startup has the side-effect of blocking until the emulator
-        # is ready for connections.
+        # is ready for connections. Things that can happen:
+        # - Success: "[datastore] API endpoint http://..."
+        # - Failure: "ERROR: (gcloud) ..."
         for line in fh:
             match = cls.startup_pattern.match(line)
 
@@ -92,7 +102,7 @@ class DatastoreEmulator:
 
                 return env
         else:
-            raise RuntimeError("Failed to parse output at startup")
+            raise RuntimeError("Failed to start the datastore emulator")
 
     @classmethod
     def _parse_env_url(cls, url: str) -> dict:

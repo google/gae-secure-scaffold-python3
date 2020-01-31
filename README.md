@@ -15,10 +15,9 @@ a flask app factory found in `secure_scaffold/factories.py`. This app will:
 1. Set assorted security headers (Strict-Transport-Security, X-Frame-Options,
    X-XSS-Protection, X-Content-Type-Options, Content-Security-Policy) with
    strong default values to help avoid attacks like Cross-Site Scripting (XSS)
-   and Cross-Site Script Inclusion.  See  `add_csp_headers` and
-   `settings.CSP_CONFIG`.
+   and Cross-Site Script Inclusion.
 1. Verify XSRF tokens by default on authenticated requests using any verb other
-   that GET, HEAD, or OPTIONS.  See the `secure_scaffold/xsrf.py` for more information.
+   that GET, HEAD, or OPTIONS.
 
 
 ## Usage
@@ -95,13 +94,7 @@ Then set the FLASK_SETTINGS_MODULE:
 The SECRET_KEY setting is read from the datastore when the application starts. If there is no setting, a random key is created and saved.
 
 
-### Authentication
-
-The Secure Scaffold provides two methods of authentication. One is an in built
-authentication system relying on Googles OAuth2 system. The alternative is a system relying on IAP
-
-
-#### IAP Users
+### Authentication for IAP users
 
 This is available at `secure_scaffold.contrib.appengine.users`. It provides a `User`
 class which has a few useful methods providing the details of the current user.
@@ -110,8 +103,7 @@ for authentication and admin rights respectively on the views they are applied t
 
 These work almost identically to how they do in the first generation App Engine APIs.
 
-To use these you will need to enable IAP on your App Engine instance. This is
-provides the app with the correct headers for this functionality.
+To use these you will need to enable IAP on your App Engine instance. This provides the app with the correct headers for this functionality.
 
 
 ## Scaffold Development
@@ -137,10 +129,6 @@ which are no longer available in second generation instances
 - Security settings
 - Defines our CSP headers and other specifics
 
-`secure_scaffold/xsrf.py`
-- Defines XSRF decorators to be used with your flask app
-- See XSRF below on how to use this
-
 
 ### Dependency Setup
 
@@ -153,6 +141,13 @@ We recommend setting up a virtual env to install dependencies:
 
 ### Testing
 
+Install the Google Cloud SDK: https://cloud.google.com/sdk/docs
+
+Once the SDK is installed, install the datastore emulator:
+
+    gcloud components install beta
+    gcloud components install cloud-datastore-emulator
+
 To run tests:
 
     pytest
@@ -160,4 +155,6 @@ To run tests:
 
 ## Third Party Credits
 
-- Flask
+- Flask - https://github.com/pallets/flask
+- flask-seasurf - https://github.com/maxcountryman/flask-seasurf
+- flask-talisman - https://github.com/GoogleCloudPlatform/flask-talisman
