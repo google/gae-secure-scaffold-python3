@@ -8,3 +8,5 @@ htmlcov
 env/
 __pycache__/
 *.egg-info/
+.nox/
+dist/

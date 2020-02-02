@@ -1,10 +1,10 @@
 import os
 
 import flask
-import secure_scaffold
+import securescaffold
 
 
-app = secure_scaffold.create_app(__name__)
+app = securescaffold.create_app(__name__)
 
 
 @app.route('/')

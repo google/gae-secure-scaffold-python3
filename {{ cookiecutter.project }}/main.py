@@ -1,7 +1,7 @@
-import secure_scaffold
+import securescaffold
 
 
-app = secure_scaffold.create_app()
+app = securescaffold.create_app()
 
 
 @app.route('/')

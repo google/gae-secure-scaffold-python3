@@ -8,6 +8,6 @@ include README.md
 include requirements.txt
 include setup.cfg
 include setup.py
-graft secure_scaffold
+graft securescaffold
 global-exclude __pycache__
 global-exclude *.py[co]

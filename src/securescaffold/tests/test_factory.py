@@ -5,8 +5,8 @@ import pytest
 from flask import Flask
 from google.cloud import ndb
 
-from secure_scaffold import factory
-from secure_scaffold import emulator
+from securescaffold import factory
+from securescaffold import emulator
 
 
 @pytest.fixture(scope="session")
@@ -64,8 +64,8 @@ def test_extra_flask_args(ndb_client):
 
 
 def test_given_flask_name(ndb_client):
-    app = factory.create_app("test")
-    assert app.name == "test"
+    app = factory.create_app("foo")
+    assert app.name == "foo"
 
 
 def test_new_app_creates_secret_key(ndb_client):

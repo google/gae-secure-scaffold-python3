@@ -10,7 +10,7 @@ Google App Engine (although it is not limited to this).
 It is built using Python 3 and Flask.
 
 The scaffold provides the following basic security guarantees by default through
-a flask app factory found in `secure_scaffold/factories.py`. This app will:
+a flask app factory found in `securescaffold/factories.py`. This app will:
 
 1. Set assorted security headers (Strict-Transport-Security, X-Frame-Options,
    X-XSS-Protection, X-Content-Type-Options, Content-Security-Policy) with
@@ -44,9 +44,9 @@ This prompts for the App Engine project name and creates a directory with that n
 To use the secure scaffold in your app, use our app generator.
 
 ```python
-import secure_scaffold
+import securescaffold
 
-app = secure_scaffold.create_app()
+app = securescaffold.create_app()
 ```
 
 This will automatically set all the needed CSP headers.
@@ -54,7 +54,7 @@ This will automatically set all the needed CSP headers.
 
 ### Configuring Flask and the SECRET_KEY setting
 
-Set the environment variable FLASK_SETTINGS_FILENAME to the name of a Python file. Configuration defaults are loaded from "secure_scaffold.settings". The configuration is loaded when you create the Flask application.
+Set the environment variable FLASK_SETTINGS_FILENAME to the name of a Python file. Configuration defaults are loaded from "securescaffold.settings". The configuration is loaded when you create the Flask application.
 
 To customize settings, create a Python module that overrides the default settings, and point FLASK_SETTINGS_FILENAME to the file name. For example, here's how you can change the name for the session cookie created by Flask:
 
@@ -74,7 +74,7 @@ The SECRET_KEY setting is read from the datastore when the application starts. I
 
 ### Authentication for IAP users
 
-This is available at `secure_scaffold.contrib.appengine.users`. It provides a `User`
+This is available at `securescaffold.contrib.appengine.users`. It provides a `User`
 class which has a few useful methods providing the details of the current user.
 It also provides `requires_auth` and `requires_admin` decorators which enforce the need
 for authentication and admin rights respectively on the views they are applied to.
@@ -86,37 +86,11 @@ To use these you will need to enable IAP on your App Engine instance. This provi
 
 ## Scaffold Development
 
-### Structure:
-
-`secure_scaffold/`
-- Top level directory
-
-`secure_scaffold/contrib`
-- Contains non-essential but useful libraries.
-- Holds several alternatives to App Engine APIs
-which are no longer available in second generation instances
-
-`secure_scaffold/tests`
-- Tests for the secure scaffold
-
-`secure_scaffold/factory.py`
-- The main Flask app factory that applies the security defaults
-
-`secure_scaffold/settings.py`
-- Security settings
-- Defines our CSP headers and other specifics
-
-
-### Dependency Setup
-
-We recommend setting up a virtual env to install dependencies:
+Create a virtual environment and install the requirements:
 
     python3 -m venv env
     source env/bin/activate
     pip install --requirement dev_requirements.txt
-
-
-### Testing
 
 Install the Google Cloud SDK: https://cloud.google.com/sdk/docs
 
@@ -125,9 +99,13 @@ Once the SDK is installed, install the datastore emulator:
     gcloud components install beta
     gcloud components install cloud-datastore-emulator
 
-To run tests:
+To run tests with your current Python version:
 
     pytest
+
+To run tests for all supported versions of Python:
+
+    nox
 
 
 ## Third Party Credits

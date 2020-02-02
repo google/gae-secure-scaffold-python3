@@ -1,11 +1,8 @@
-import flask
-
-import secure_scaffold
-
-
-DEFAULT_LANGS = ["en"]
-DEFAULT_LANGS_REDIRECT_TO = "/intl/{locale}/"
+import securescaffold
+import securescaffold.views
 
 
-app = flask.Flask(__name__)
-app.add_url_rule("/", "lang_redirect", secure_scaffold.views.lang_redirect)
+app = securescaffold.create_app(__name__)
+app.add_url_rule("/", "lang_redirect", securescaffold.views.lang_redirect)
+app.config["LOCALES"] = ["en"]
+app.config["LOCALES_REDIRECT_TO"] = "/intl/{locale}/"

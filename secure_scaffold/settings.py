@@ -1,3 +1,0 @@
-import flask_talisman
-
-CONTENT_SECURITY_POLICY = flask_talisman.GOOGLE_CSP_POLICY

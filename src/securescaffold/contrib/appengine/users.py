@@ -1,13 +1,8 @@
 """
 This only works when IAP is enabled for your App Engine instance
 """
-try:
-    import flask
-except ImportError:
-    raise ImportError(
-        "The secure_scaffold.contrib.appengine.api.users module currently requires Flask to run. "
-        "Please ensure it is installed."
-    )
+import flask
+
 
 USER_ADMIN_HEADER = "X-Appengine-User-Is-Admin"
 USER_AUTH_DOMAIN_HEADER = "X-Appengine-Auth-Domain"

@@ -11,7 +11,8 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="Toaster Secure Scaffold RC",
     version='0.8.2',
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(where="src"),
+    package_dir={"": "src"},
     install_requires=install_requires,
     include_package_data=True,
     author="Toaster Ltd.",

@@ -2,6 +2,6 @@
 
 # See https://github.com/GoogleCloudPlatform/flask-talisman for details on
 # configuring CSP.
-CONTENT_SECURITY_POLICY = {
+CSP_POLICY = {
     "script-src": "'self'",
 }

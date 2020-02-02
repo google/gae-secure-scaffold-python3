@@ -9,6 +9,12 @@ from google.cloud import ndb
 
 
 class AppConfig(ndb.Model):
+    """Datastore model for storing app-wide configuration.
+
+    This is used by `create_app` to save a random value for SECRET_KEY that
+    persists across application startup, rather than defining SECRET_KEY in
+    your source code.
+    """
     SINGLETON_ID = 'config'
 
     secret_key = ndb.StringProperty()
@@ -16,6 +22,7 @@ class AppConfig(ndb.Model):
 
     @classmethod
     def singleton(cls):
+        """Create a datastore entity to store app-wide configuration."""
         config = cls.initial_config()
         obj = cls.get_or_insert(cls.SINGLETON_ID, **config)
 
@@ -23,6 +30,7 @@ class AppConfig(ndb.Model):
 
     @classmethod
     def initial_config(cls):
+        """Initial values for app configuration."""
         config = {
             'secret_key': secrets.token_urlsafe(16),
         }
@@ -31,36 +39,34 @@ class AppConfig(ndb.Model):
 
 
 def create_app(*args, **kwargs) -> flask.Flask:
-    """
-    Generate a Flask application with our preferred defaults.
+    """Create a Flask app with secure default behaviours.
 
-    :param overrides: additional configuration keys / values.
-    :return: A Flask Application with our preferred defaults.
+    :return: A Flask application.
     :rtype: Flask
     """
     app = flask.Flask(*args, **kwargs)
     configure_app(app)
     # Defaults to flask_talisman.GOOGLE_SECURITY_POLICY
-    csp = app.config['CONTENT_SECURITY_POLICY']
+    csp = app.config['CSP_POLICY']
     flask_talisman.Talisman(app, content_security_policy=csp)
 
     return app
 
 
 def configure_app(app: flask.Flask):
-    """
-    Setup the configuration for the Flask app.
+    """Read configuration and create a SECRET_KEY.
 
-    This method is meant to be overridden in the case
-    that a Flask app needs extra configuration.
+    The configuration is read from "securescaffold.settings", and from the
+    filename in the "FLASK_SETTINGS_FILENAME" environment variable (if
+    it exists).
 
-    By default it sets the app Secret Key.
+    If there is no SECRET_KEY setting, then a random string is generated,
+    saved in the datastore, and set.
 
     :param Flask app: The Flask app that requires configuring.
-    :param overrides: additional configuration keys / values.
     :return: None
     """
-    app.config.from_object('secure_scaffold.settings')
+    app.config.from_object('securescaffold.settings')
     app.config.from_envvar("FLASK_SETTINGS_FILENAME", silent=True)
 
     if not app.config['SECRET_KEY']:

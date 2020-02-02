@@ -1,4 +1,4 @@
-# Configuration for a sttic website. Requests for the site root are
+# Configuration for a static website. Requests for the site root are
 # redirected to /intl/[LANG]/ depending on the browser.
 #
 # https://cloud.google.com/appengine/docs/standard/python3/config/appref

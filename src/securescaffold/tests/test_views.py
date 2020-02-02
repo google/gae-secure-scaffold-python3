@@ -2,11 +2,11 @@ import unittest
 
 import flask
 
-import secure_scaffold.views
+import securescaffold.views
 
 
 demo_app = flask.Flask(__name__)
-demo_app.add_url_rule('/', 'home', secure_scaffold.views.lang_redirect)
+demo_app.add_url_rule('/', 'home', securescaffold.views.lang_redirect)
 
 locale_test_data = [
     # LOCALES, Accept-Language header, expected redirect
