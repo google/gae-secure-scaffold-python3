@@ -4,16 +4,32 @@ import flask
 import google.auth
 import google.auth.transport.requests
 import requests
+import securescaffold
 from google.auth.compute_engine import credentials
 from google.cloud import storage
 from google.oauth2 import service_account
 
 
-app = flask.Flask(__name__)
+app = securescaffold.create_app(__name__)
 _DEFAULT_TOKEN_URI = 'https://www.googleapis.com/oauth2/v4/token'
 
 
+def in_production():
+    return os.getenv('GAE_ENV', '').startswith('standard')
+
+
 def new_creds(scopes=None):
+    """Create credentials wih non-default scopes.
+
+    The IAP API must be enabled, and the service account must have been
+    granted permissions to create auth tokens (included in the Service Account
+    Token Creator role).
+    """
+    if not in_production():
+        # Local development.
+        creds, _ = google.auth.default(scopes=scopes)
+        return creds
+
     request = google.auth.transport.requests.Request()
     creds = credentials.IDTokenCredentials(request, None)
     signer = creds.signer
@@ -29,6 +45,10 @@ def new_creds(scopes=None):
 
 @app.route('/')
 def home():
+    """List the Google Cloud Storage buckets."""
+    # In fact the regular service account token is sufficient to list buckets,
+    # but imagine there were other scopes you wanted to use with the default
+    # service account.
     try:
         creds = new_creds()
         client = storage.Client(credentials=creds)

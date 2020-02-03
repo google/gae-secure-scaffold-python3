@@ -1,0 +1,5 @@
+Flask
+google-auth
+google-cloud-storage
+requests
+https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/py37-scaffold.zip
