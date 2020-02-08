@@ -16,10 +16,10 @@ def best_match(requested_langs: LanguageAccept, supported_langs: list) -> Option
         requested = []
 
         for code, weight in requested_langs:
-            code = code.split('-')[0]
+            code = code.split("-")[0]
             requested.append((code, weight))
 
-        supported_shorted = [code.split('-')[0] for code in supported_langs]
+        supported_shorted = [code.split("-")[0] for code in supported_langs]
         result = LanguageAccept(requested).best_match(supported_shorted)
 
         # If match, convert back to the full language code.

@@ -7,7 +7,7 @@ runtime: python37
 handlers:
 
   - url: /static/
-    static_dir: dist
+    static_dir: static
     secure: always
     http_headers:
       Strict-Transport-Security: "max-age=2592000; includeSubdomains"

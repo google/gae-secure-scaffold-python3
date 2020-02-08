@@ -15,7 +15,7 @@ The scaffold consists of:
 
 Secure Scaffold provides a [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template. [Install the Cookiecutter command](https://cookiecutter.readthedocs.io/en/latest/), then create a project from the template - you will be prompted for a project name. Project names must start with a letter and use lower-case letters and numbers and dashes, for example "my-project-1":
 
-    cookiecutter https://github.com/davidwtbuxton/gae-secure-scaffold-python.git --checkout py37-scaffold
+    cookiecutter https://github.com/davidwtbuxton/gae-secure-scaffold-python.git
 
 Cookiecutter will create a new folder with your project name. Inside the folder is a configuration for a static website, with instructions for deploying the website to App Engine.
 
@@ -36,11 +36,11 @@ We have included examples of websites that use the Secure Scaffold. We hope you 
 Add the library to requirements.txt:
 
     # requirements.txt
-    https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/py37-scaffold.zip
+    https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/master.zip
 
 Install the library in your Python development environment:
 
-    pip install https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/py37-scaffold.zip
+    pip install https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/master.zip
 
 Import the library and use it to create a Flask application:
 

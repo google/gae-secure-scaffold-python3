@@ -16,7 +16,8 @@ class AppConfig(ndb.Model):
     persists across application startup, rather than defining SECRET_KEY in
     your source code.
     """
-    SINGLETON_ID = 'config'
+
+    SINGLETON_ID = "config"
 
     secret_key = ndb.StringProperty()
 
@@ -32,7 +33,7 @@ class AppConfig(ndb.Model):
     def initial_config(cls) -> dict:
         """Initial values for app configuration."""
         config = {
-            'secret_key': secrets.token_urlsafe(16),
+            "secret_key": secrets.token_urlsafe(16),
         }
 
         return config
@@ -69,12 +70,12 @@ def configure_app(app: flask.Flask) -> None:
     :param Flask app: The Flask app that requires configuring.
     :return: None
     """
-    app.config.from_object('securescaffold.settings')
+    app.config.from_object("securescaffold.settings")
     app.config.from_envvar("FLASK_SETTINGS_FILENAME", silent=True)
 
-    if not app.config['SECRET_KEY']:
+    if not app.config["SECRET_KEY"]:
         config = get_config_from_datastore()
-        app.config['SECRET_KEY'] = config.secret_key
+        app.config["SECRET_KEY"] = config.secret_key
 
 
 def get_config_from_datastore() -> AppConfig:

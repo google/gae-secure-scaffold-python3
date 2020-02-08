@@ -9,6 +9,7 @@ X_APPENGINE_USER_IS_ADMIN = "X-Appengine-User-Is-Admin"
 
 def admin_only(func):
     """Checks the request is from an App Engine administrator."""
+
     @functools.wraps(func)
     def _wrapper(*args, **kwargs):
         request = flask.request
@@ -26,6 +27,7 @@ def tasks_only(func):
 
     This also works for requests from the Tasks scheduler.
     """
+
     @functools.wraps(func)
     def _wrapper(*args, **kwargs):
         request = flask.request

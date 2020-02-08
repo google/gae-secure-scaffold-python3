@@ -10,6 +10,7 @@ class DatastoreEmulator:
 
     Requires the gcloud command be on the $PATH.
     """
+
     default_project = "test"
     # Work around a bug where NDB cannot connect to "::1".
     default_host_port = "localhost"
@@ -76,7 +77,7 @@ class DatastoreEmulator:
 
     def stop(self):
         """Stop the running emulator instance."""
-        shutdown_url = self._env['DATASTORE_HOST'] + "/shutdown"
+        shutdown_url = self._env["DATASTORE_HOST"] + "/shutdown"
         req = urllib.request.Request(shutdown_url, method="POST")
         urllib.request.urlopen(req)
 

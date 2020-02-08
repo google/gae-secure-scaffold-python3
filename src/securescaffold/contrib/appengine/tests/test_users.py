@@ -9,7 +9,7 @@ from securescaffold.contrib.appengine import users
 
 
 @contextlib.contextmanager
-def request_context(admin=None, email=None, auth_domain='example.com', id=None):
+def request_context(admin=None, email=None, auth_domain="example.com", id=None):
     """Helper to populate `flask.request` with security headers."""
     app = flask.Flask("test")
     headers = []
