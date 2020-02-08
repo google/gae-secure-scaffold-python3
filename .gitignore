@@ -5,8 +5,8 @@
 env/
 .coverage
 htmlcov
-env/
 __pycache__/
 *.egg-info/
 .nox/
-dist/
+/dist/
+.mypy_cache/

@@ -1,0 +1,64 @@
+{% extends "_base.html" %}
+
+{% block body %}
+
+<h1 class="title is-1">CSRF protection</h1>
+
+{% if message %}
+<div class="message is-success">
+	<div class="message-header">Success</div>
+	<div class="message-body">{{ message }}</div>
+</div>
+{% endif %}
+
+<p>
+	Secure Scaffold uses the Flask-SeaSurf library to prevent CSRF attacks. See <a href="https://flask-seasurf.readthedocs.io/">the Flask-SeaSurf documentation</a> for details on how to use and configure the library in your Flask application.
+</p>
+
+<p>
+	For HTML forms (that use POST), make sure you include the CSRF token as a hidden field:
+</p>
+
+<pre><code>
+{%- filter forceescape -%}
+{%- raw -%}
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+{%- endraw -%}
+{%- endfilter -%}
+</code></pre>
+
+<p>
+	This form will succeed on submit because it includes the CSRF token.
+</p>
+
+<p>
+	<form method="post">
+		<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+		<div class="field">
+			<label class="label">
+				First name <input type="text" name="first-name" value="Alice" class="input">
+			</label>
+			<button type="submit" class="button is-primary">Submit form (with CSRF token)</button>
+		</div>
+
+	</form>
+</p>
+
+<p>
+	While this form will fail on submit because it does not include the CSRF token.
+</p>
+
+<p>
+	<form method="post">
+		<div class="field">
+			<label class="label">
+				First name <input type="text" name="first-name" value="Alice" class="input">
+			</label>
+			<button type="submit" class="button is-primary">Submit form (no CSRF token)</button>
+		</div>
+
+	</form>
+</p>
+
+{% endblock body %}

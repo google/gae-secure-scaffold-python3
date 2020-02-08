@@ -4,6 +4,7 @@ import secrets
 from typing import Optional
 
 import flask
+import flask_seasurf
 import flask_talisman
 from google.cloud import ndb
 
@@ -18,10 +19,9 @@ class AppConfig(ndb.Model):
     SINGLETON_ID = 'config'
 
     secret_key = ndb.StringProperty()
-    created = ndb.DateTimeProperty(auto_now_add=True)
 
     @classmethod
-    def singleton(cls):
+    def singleton(cls) -> "AppConfig":
         """Create a datastore entity to store app-wide configuration."""
         config = cls.initial_config()
         obj = cls.get_or_insert(cls.SINGLETON_ID, **config)
@@ -29,7 +29,7 @@ class AppConfig(ndb.Model):
         return obj
 
     @classmethod
-    def initial_config(cls):
+    def initial_config(cls) -> dict:
         """Initial values for app configuration."""
         config = {
             'secret_key': secrets.token_urlsafe(16),
@@ -46,14 +46,17 @@ def create_app(*args, **kwargs) -> flask.Flask:
     """
     app = flask.Flask(*args, **kwargs)
     configure_app(app)
-    # Defaults to flask_talisman.GOOGLE_SECURITY_POLICY
-    csp = app.config['CSP_POLICY']
-    flask_talisman.Talisman(app, content_security_policy=csp)
+
+    # Both these extensions can be used as view decorators. Bit worried that
+    # this circular reference will cause memory leaks.
+    talisman_kwargs = get_talisman_config(app.config)
+    app.talisman = flask_talisman.Talisman(app, **talisman_kwargs)
+    app.csrf = flask_seasurf.SeaSurf(app)
 
     return app
 
 
-def configure_app(app: flask.Flask):
+def configure_app(app: flask.Flask) -> None:
     """Read configuration and create a SECRET_KEY.
 
     The configuration is read from "securescaffold.settings", and from the
@@ -82,3 +85,18 @@ def get_config_from_datastore() -> AppConfig:
         obj = AppConfig.singleton()
 
     return obj
+
+
+def get_talisman_config(config: dict) -> dict:
+    """Get a dict of keyword arguments to configure flask-talisman."""
+    # Talisman doesn't read settings from the Flask app config.
+    names = {
+        "CSP_POLICY": "content_security_policy",
+        "CSP_POLICY_NONCE_IN": "content_security_policy_nonce_in",
+        "CSP_POLICY_REPORT_ONLY": "content_security_policy_report_only",
+        "CSP_POLICY_REPORT_URI": "content_security_policy_report_uri",
+    }
+
+    result = {kwarg: config[setting] for setting, kwarg in names.items()}
+
+    return result

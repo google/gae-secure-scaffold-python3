@@ -1,115 +1,178 @@
-# Secure GAE Scaffold (Python 3)
+# Secure Scaffold
 
 ## Introduction
 
-Please note: this is not an official Google product.
+Secure Scaffold helps you build websites on [Google's App Engine standard](https://cloud.google.com/appengine/docs/standard/python3/) platform with security features enabled by default. It is designed for both static websites which have no dynamic back-end code, and Python web applications.
 
-This is a secure scaffold package designed primarily to work with
-Google App Engine (although it is not limited to this).
+The scaffold consists of:
 
-It is built using Python 3 and Flask.
-
-The scaffold provides the following basic security guarantees by default through
-a flask app factory found in `securescaffold/factories.py`. This app will:
-
-1. Set assorted security headers (Strict-Transport-Security, X-Frame-Options,
-   X-XSS-Protection, X-Content-Type-Options, Content-Security-Policy) with
-   strong default values to help avoid attacks like Cross-Site Scripting (XSS)
-   and Cross-Site Script Inclusion.
-1. Verify XSRF tokens by default on authenticated requests using any verb other
-   that GET, HEAD, or OPTIONS.
+ * A [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template for starting a static website project.
+ * Examples of App Engine websites: a static-only website; a mostly static website with back-end logic to redirect users depending on the Accept-Language header; a Flask application that uses CSP nonces, CSRF-protected forms, and more security features.
+ * A Python library for creating a [Flask](https://flask.palletsprojects.com/) website with secure defaults. This uses the [Flask-SeaSurf](https://github.com/maxcountryman/flask-seasurf) library to enable [CSRF](https://developer.mozilla.org/en-US/docs/Glossary/CSRF) protection, and the [Flask-Talisman](https://github.com/GoogleCloudPlatform/flask-talisman) library to enable [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) (Content Security Policy) headers and other security features.
 
 
-## Usage
+## Using the website template
 
-### Installation
+Secure Scaffold provides a [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template. [Install the Cookiecutter command](https://cookiecutter.readthedocs.io/en/latest/), then create a project from the template - you will be prompted for a project name. Project names must start with a letter and use lower-case letters and numbers and dashes, for example "my-project-1":
 
-This project can be installed via
-
-`pip install https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/py37-scaffold.zip`
-
-
-### Starting a new project
-
-Install the Cookiecutter utility. Then create a new empty project:
-
-    pip install cookiecutter
     cookiecutter https://github.com/davidwtbuxton/gae-secure-scaffold-python.git --checkout py37-scaffold
 
-This prompts for the App Engine project name and creates a directory with that name. Inside the directory is the skeleton of a basic app for Python 3 on App Engine standard.
+Cookiecutter will create a new folder with your project name. Inside the folder is a configuration for a static website, with instructions for deploying the website to App Engine.
 
 
-### App Factory
+## Website examples
 
-To use the secure scaffold in your app, use our app generator.
+We have included examples of websites that use the Secure Scaffold. We hope you find these useful when building your own websites!
 
-```python
-import securescaffold
-
-app = securescaffold.create_app()
-```
-
-This will automatically set all the needed CSP headers.
+ * A static site - uses app.yaml to serve a home page and all assets from a directory, with HTTPS and secure headers.
+ * A mostly-static site which redirects requests depending on the Accept-Language header - uses app.yaml to serve the static assets and configures a root page handler that redirects visitors to `/intl/<code>`.
+ * A secure Flask application - uses securescaffold to create an application with secure defaults, and demonstrates how to customise the application and extend it for common problems.
 
 
-### Configuring Flask and the SECRET_KEY setting
+## Using the secure scaffold Python library
 
-Set the environment variable FLASK_SETTINGS_FILENAME to the name of a Python file. Configuration defaults are loaded from "securescaffold.settings". The configuration is loaded when you create the Flask application.
+### Installation and quick start
 
-To customize settings, create a Python module that overrides the default settings, and point FLASK_SETTINGS_FILENAME to the file name. For example, here's how you can change the name for the session cookie created by Flask:
+Add the library to requirements.txt:
 
-    # myappconfig.py
-    SESSION_COOKIE_NAME = 'myapp_session'
+    # requirements.txt
+    https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/py37-scaffold.zip
 
-Then set the FLASK_SETTINGS_FILENAME:
+Install the library in your Python development environment:
+
+    pip install https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/py37-scaffold.zip
+
+Import the library and use it to create a Flask application:
+
+    # main.py
+    import securescaffold
+
+    app = securescaffold.create_app(__name__)
+
+    @app.route("/")
+    def hello():
+      return "<h1>Hello</h1>"
+
+The line `app = securescaffold.create_app(__name__)` creates a Flask application which includes the Flask-SeaSurf and Flask-Talisman libraries. It also reads an initial configuration from `securescaffold.settings`.
+
+
+### Configuring your application with FLASK_SETTINGS_FILENAME
+
+When you create a Flask app with `app = securescaffold.create_app(__name__)` the configuration is read from `securescaffold.settings` and the filename in the `FLASK_SETTINGS_FILENAME` environment variable (if it exists).
+
+You can customise your application by creating a Python file. Then set the environment variable `FLASK_SETTINGS_FILENAME` to point to your Python file. When your code calls `securescaffold.create_app(__name__)`, your custom configuration will be read from the Python file.
+
+    # Custom settings in "settings.py"
+    SESSION_COOKIE_NAME = "my-custom-cookie"
+
+And add the environment variable to `app.yaml`:
 
     # app.yaml
     runtime: python37
 
+    handlers:
+      - url: /.*
+        script: auto
+
     env_variables:
-      FLASK_SETTINGS_FILENAME = "myappconfig.py"
+      FLASK_SETTINGS_FILENAME: "settings.py"
 
-The SECRET_KEY setting is read from the datastore when the application starts. If there is no setting, a random key is created and saved.
-
-
-### Authentication for IAP users
-
-This is available at `securescaffold.contrib.appengine.users`. It provides a `User`
-class which has a few useful methods providing the details of the current user.
-It also provides `requires_auth` and `requires_admin` decorators which enforce the need
-for authentication and admin rights respectively on the views they are applied to.
-
-These work almost identically to how they do in the first generation App Engine APIs.
-
-To use these you will need to enable IAP on your App Engine instance. This provides the app with the correct headers for this functionality.
+See the [Flask documentation for configuring an application](https://flask.palletsprojects.com/en/master/config/) for more details.
 
 
-## Scaffold Development
+### Changing the CSP configuration
 
-Create a virtual environment and install the requirements:
+Secure Scaffold uses Flask-Talisman's Google policy as the default CSP policy. You can customise the CSP policy by adding these variables to your custom configuration:
 
-    python3 -m venv env
-    source env/bin/activate
-    pip install --requirement dev_requirements.txt
+Configuration name     | Talisman equivalent                 | Default value |
+-----------------------|-------------------------------------|---------------|
+CSP_POLICY             | content_security_policy             | GOOGLE_CSP_POLICY |
+CSP_POLICY_NONCE_IN    | content_security_policy_nonce_in    | None          |
+CSP_POLICY_REPORT_URI  | content_security_policy_report_uri  | None          |
+CSP_POLICY_REPORT_ONLY | content_security_policy_report_only | None          |
 
-Install the Google Cloud SDK: https://cloud.google.com/sdk/docs
-
-Once the SDK is installed, install the datastore emulator:
-
-    gcloud components install beta
-    gcloud components install cloud-datastore-emulator
-
-To run tests with your current Python version:
-
-    pytest
-
-To run tests for all supported versions of Python:
-
-    nox
+See the [Flask-Talisman documentation](https://github.com/GoogleCloudPlatform/flask-talisman) for details of how to use these settings.
 
 
-## Third Party Credits
+### CSRF protection with Flask-SeaSurf
 
-- Flask - https://github.com/pallets/flask
-- flask-seasurf - https://github.com/maxcountryman/flask-seasurf
-- flask-talisman - https://github.com/GoogleCloudPlatform/flask-talisman
+The Flask-SeaSurf library provides CSRF protection. An instance of `SeaSurf` is assigned to the Flask application as `app.csrf`. You can use this to decorate a request handler as exempt from CSRF protection:
+
+    # main.py
+    import securescaffold
+
+    app = securescaffold.create_app(__name__)
+
+    @app.csrf.exempt
+    @app.route("/csp-report", methods=["POST"])
+    def csp_report():
+      """CSP report handlers accept POST requests with no CSRF token."""
+      return ""
+
+See the [Flask-SeaSurf documentation](https://flask-seasurf.readthedocs.io/) for details of configuration and use.
+
+
+### Authenticating users with IAP
+
+App Engine supports [the IAP service](https://cloud.google.com/iap/docs) (Identity-Aware Proxy). When IAP is enabled and configured to require authentication, you can use Secure Scaffold to get the signed-in user's email address. This is equivalent to the Users API that was available with the Python 2.7 runtime, but which is not available on the Python 3 runtime.
+
+    # main.py
+    import securescaffold
+    from securescaffold.contrib.appengine import users
+
+    app = securescaffold.create_app(__name__)
+
+    @app.route("/")
+    def hello():
+        user = users.get_current_user()
+
+        if user:
+            email = user.email()
+            user_id = user.user_id()
+
+            return "Hello signed-in user"
+
+      return "Not signed-in"
+
+
+### Securing request handlers and cron tasks
+
+**You must decorate a cron request handler with `@securescaffold.cron_only` to prevent unauthorized requests.**
+
+Secure Scaffold (thanks to Flask-Talisman) configures HTTP requests to be redirected to use HTTPS. However [App Engine's cron scheduler](https://cloud.google.com/appengine/docs/standard/python3/scheduling-jobs-with-cron-yaml#validating_cron_requests) will make HTTP requests to your cron request handlers (not HTTPS), and the cron requests will fail if your application tries to redirect the request to use HTTPS.
+
+An instance of `Talisman` is assigned to the Flask application as `app.talisman`. You can use this to allow HTTP requests to a cron request handler.
+
+    # main.py
+    import securescaffold
+
+    app = securescaffold.create_app(__name__)
+
+    @app.route("/cron")
+    @app.talisman(force_https=False)
+    @securescaffold.cron_only
+    def cron_task():
+        # This request handler is protected by the `securescaffold.cron_only`
+        # decorator so will only be called if the request is from the cron
+        # scheduler or from an App Engine project admin.
+        return ""
+
+Secure Scaffold includes the following decorators to help prevent unauthorised access to your request handlers:
+
+ * `securescaffold.admin_only`
+   Checks the request was made by a signed-in App Engine admin. If not, the request receives a 403 forbidden response. N.B. you must restrict access to your website with IAP to allow administrators to sign-in.
+ * `securescaffold.cron_only`
+   Checks the request was made by the Cron / Tasks scheduler or by a signed-in App Engine admin. If not, the request receives a 403 forbidden response.
+ * `securescaffold.tasks_only`
+   Same as the `securescaffold.cron_only` decorator.
+
+
+
+## Third-party credits
+
+This project is built on other projects. Here are some of them:
+
+ * Flask - https://flask.palletsprojects.com/
+ * Flask-SeaSurf - https://github.com/maxcountryman/flask-seasurf
+ * Flask-Talisman - https://github.com/GoogleCloudPlatform/flask-talisman
+ * `secure_scaffold.contrib.appengine.users` from Toaster - https://github.com/toasterco/gae-secure-scaffold-python

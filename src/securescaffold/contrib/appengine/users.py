@@ -21,10 +21,11 @@ class UserNotFoundError(Error):
 def requires_auth(func):
     """A decorator that requires a currently logged in user."""
     def decorator(*args, **kwargs):
-        try:
-            get_current_user()
-        except UserNotFoundError:
+        user = get_current_user()
+
+        if user is None:
             flask.abort(401)
+
         return func(*args, **kwargs)
     return decorator
 
@@ -97,7 +98,10 @@ class User:
 
 
 def get_current_user():
-    return User()
+    try:
+        return User()
+    except UserNotFoundError:
+        return None
 
 
 def is_current_user_admin():

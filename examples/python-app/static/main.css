@@ -1,0 +1,12 @@
+body {
+	font-family: sans-serif;
+	padding: 10px 10px;
+}
+
+pre {
+	overflow: scroll;
+}
+
+.table td {
+	overflow-wrap: anywhere;
+}

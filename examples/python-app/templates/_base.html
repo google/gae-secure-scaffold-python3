@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+	<head>
+		<title>{{ page_title }}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="/static/bulma.min.css" nonce="{{ csp_nonce() }}">
+		<link rel="stylesheet" href="/static/main.css" nonce="{{ csp_nonce() }}">
+		{% block extrahead %}{% endblock %}
+	</head>
+	<body>
+
+	<div class="columns">
+		<aside class="menu column is-one-third">
+			<p class="menu-label">
+				Navigation
+			</p>
+			<ul class="menu-list">
+				<li>
+					{% set about_url = url_for("about") %}
+					<a href="{{ about_url }}">Secure Scaffold</a>
+
+					<ul>
+						<li><a href="{{ about_url }}#introduction">Introduction</a></li>
+						<li><a href="{{ about_url }}#using-the-website-template">Using the website template</a></li>
+						<li><a href="{{ about_url }}#website-examples">Website examples</a></li>
+						<li>
+							<a href="{{ about_url }}#using-the-secure-scaffold-python-library">Using the secure scaffold python library</a>
+
+							<ul>
+								<li><a href="{{ about_url }}#installation-and-quick-start">Installation and quick start</a></li>
+								<li><a href="{{ about_url }}#configuring-with-flask-settings-filename">Configuring with FLASK_SETTINGS_FILENAME</a></li>
+								<li><a href="{{ about_url }}#changing-the-csp-configuration">Changing the CSP configuration</a></li>
+								<li><a href="{{ about_url }}#csrf-protection-with-flask-seasurf">CSRF protection with Flask-SeaSurf</a></li>
+								<li><a href="{{ about_url }}#authenticating-users-with-iap">Authenticating users with IAP</a></li>
+								<li><a href="{{ about_url }}#securing-request-handlers-and-cron-tasks">Securing request handlers and cron tasks</a></li>
+
+							</ul>
+						</li>
+						<li><a href="{{ about_url }}#third-party-credits">Third-party credits</a></li>
+					</ul>
+				</li>
+				<li><a href="{{ url_for("csrf") }}">CSRF protection</a></li>
+				<li><a href="{{ url_for("headers") }}">App Engine request headers</a></li>
+			</ul>
+		</aside>
+
+		<content class="column">
+			<div class="content">
+			{% block body %}{% endblock %}
+			</div>
+		</content>
+	</div>
+
+	</body>
+</html>
