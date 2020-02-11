@@ -1,6 +1,9 @@
 # Configuration for a website consisting only of static files.
 # https://cloud.google.com/appengine/docs/standard/python3/config/appref
 
+# See the examples for how to configure projects with a dynamic back-end.
+# https://github.com/davidwtbuxton/gae-secure-scaffold-python/
+
 runtime: python37
 
 handlers:
