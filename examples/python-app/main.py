@@ -13,8 +13,13 @@ app = securescaffold.create_app(__name__)
 
 @app.route("/")
 def about():
-    """One-page introduction to Secure Scaffold."""
+    """One-page introduction to Secure Scaffold.
 
+    This renders Markdown to HTML on-the-fly, trusting the Markdown content
+    can be used to generate <a> tags. Do not do this on production sites!
+    """
+
+    # The Anchors renderer trusts the headers in the Markdown file.
     with open("README-secure-scaffold.md") as fh:
         m = mistune.Markdown(renderer=Anchors())
         readme = m.render(fh.read())
@@ -57,7 +62,10 @@ def headers():
 
 
 class Anchors(mistune.Renderer):
-    """Adds id attributes to <h*> elements."""
+    """Adds id attributes to <h*> elements.
+
+    This is not safe if you cannot trust the Markdown content.
+    """
 
     def header(self, text, level, raw=None):
         name = self.choose_name(text)

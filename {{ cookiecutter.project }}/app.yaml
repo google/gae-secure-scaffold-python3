@@ -23,7 +23,7 @@ handlers:
         script-src 'self'
           https://www.google-analytics.com/analytics.js;
 
-  - url: /.*
+  - url: /
     static_dir: dist
     secure: always
     http_headers:
