@@ -2,6 +2,8 @@
 
 ## Introduction
 
+This is not an officially supported Google product.
+
 Secure Scaffold helps you build websites on [Google's App Engine standard](https://cloud.google.com/appengine/docs/standard/python3/) platform with security features enabled by default. It is designed for both static websites which have no dynamic back-end code, and Python web applications.
 
 The scaffold consists of:
