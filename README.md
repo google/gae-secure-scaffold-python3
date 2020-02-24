@@ -57,6 +57,8 @@ Import the library and use it to create a Flask application:
 
 The line `app = securescaffold.create_app(__name__)` creates a Flask application which includes the Flask-SeaSurf and Flask-Talisman libraries. It also reads an initial configuration from `securescaffold.settings`.
 
+The included examples show [how to start the datastore emulator and the Flask server for local development](https://github.com/davidwtbuxton/gae-secure-scaffold-python/blob/master/examples/python-app/run.sh) and how to [start and stop the emulator](https://github.com/davidwtbuxton/gae-secure-scaffold-python/blob/master/src/securescaffold/tests/test_factory.py) when writing tests. **N.B. the emulator is for testing and local development only. Do not use it when deploying your application to App Engine.**
+
 
 ### Configuring your application with FLASK_SETTINGS_FILENAME
 

@@ -22,7 +22,8 @@ import urllib.request
 class DatastoreEmulator:
     """Helper to create an instance of the datastore emulator.
 
-    Requires the gcloud command be on the $PATH.
+    Requires the gcloud command be on the $PATH. Your project must NOT use
+    this code when running on production App Engine.
     """
 
     default_project = "test"
