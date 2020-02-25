@@ -1,6 +1,6 @@
 # {{ cookiecutter.project }}
 
-This is a Secure Scaffold project. More information about Secure Scaffold: https://github.com/davidwtbuxton/gae-secure-scaffold-python/
+This is a Secure Scaffold project. More information about Secure Scaffold: https://github.com/google/gae-secure-scaffold-python3
 
 
 ## Setup
@@ -27,6 +27,6 @@ The Cloud SDK includes the `gcloud` command-line tool. Use `gcloud` to deploy yo
 
     gcloud app deploy --project {{ cookiecutter.project }} app.yaml
 
-See the `gcloud` documentation for more information: https://github.com/davidwtbuxton/gae-secure-scaffold-python/
+See the `gcloud` documentation for more information: https://cloud.google.com/sdk/gcloud
 
 Visit https://{{ cookiecutter.project }}.appspot.com/ to see your website on App Engine. You can switch between deployed versions of your website and delete unused versions with Google Cloud Console: https://console.cloud.google.com/appengine/versions?project={{ cookiecutter.project }}

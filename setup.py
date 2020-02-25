@@ -24,7 +24,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Secure Scaffold",
-    version="0.1",
+    version="1.0.0",
     packages=setuptools.find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=install_requires,
@@ -32,7 +32,7 @@ setuptools.setup(
     description="Secure Scaffold for Google App Engine",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/davidwtbuxton/gae-secure-scaffold-python",
+    url="https://github.com/google/gae-secure-scaffold-python3",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
@@ -41,6 +41,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Internet",
     ],
 )

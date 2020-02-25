@@ -16,7 +16,7 @@
 # https://cloud.google.com/appengine/docs/standard/python3/config/appref
 
 # See the examples for how to configure projects with a dynamic back-end.
-# https://github.com/davidwtbuxton/gae-secure-scaffold-python/
+# https://github.com/google/gae-secure-scaffold-python3
 
 runtime: python37
 

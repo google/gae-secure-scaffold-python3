@@ -1,5 +1,5 @@
 Flask==1.1.1
-https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/master.zip
+https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
 google-cloud-ndb
 flask-talisman
 flask-seasurf

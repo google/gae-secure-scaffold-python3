@@ -3,4 +3,4 @@ google-auth
 google-cloud-storage
 grpcio
 requests
-https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/master.zip
+https://github.com/google/gae-secure-scaffold-python3/archive/master.zip

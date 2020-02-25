@@ -17,7 +17,7 @@ The scaffold consists of:
 
 Secure Scaffold provides a [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template. [Install the Cookiecutter command](https://cookiecutter.readthedocs.io/en/latest/), then create a project from the template - you will be prompted for a project name. Project names must start with a letter and use lower-case letters and numbers and dashes, for example "my-project-1":
 
-    cookiecutter https://github.com/davidwtbuxton/gae-secure-scaffold-python.git
+    cookiecutter https://github.com/google/gae-secure-scaffold-python3.git
 
 Cookiecutter will create a new folder with your project name. Inside the folder is a configuration for a static website, with instructions for deploying the website to App Engine.
 
@@ -28,7 +28,7 @@ We have included examples of websites that use the Secure Scaffold. We hope you 
 
  * A static site - uses app.yaml to serve a home page and all assets from a directory, with HTTPS and secure headers.
  * A mostly-static site which redirects requests depending on the Accept-Language header - uses app.yaml to serve the static assets and configures a root page handler that redirects visitors to `/intl/<code>`.
- * A secure Flask application - uses securescaffold to create an application with secure defaults, and demonstrates how to customise the application and extend it for common problems.
+ * A secure Flask application - uses securescaffold to create an application with secure defaults, and demonstrates how to customise the application and extend it for common uses.
 
 
 ## Using the secure scaffold Python library
@@ -38,11 +38,11 @@ We have included examples of websites that use the Secure Scaffold. We hope you 
 Add the library to requirements.txt:
 
     # requirements.txt
-    https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/master.zip
+    https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
 
 Install the library in your Python development environment:
 
-    pip install https://github.com/davidwtbuxton/gae-secure-scaffold-python/archive/master.zip
+    pip install https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
 
 Import the library and use it to create a Flask application:
 
@@ -57,7 +57,7 @@ Import the library and use it to create a Flask application:
 
 The line `app = securescaffold.create_app(__name__)` creates a Flask application which includes the Flask-SeaSurf and Flask-Talisman libraries. It also reads an initial configuration from `securescaffold.settings`.
 
-The included examples show [how to start the datastore emulator and the Flask server for local development](https://github.com/davidwtbuxton/gae-secure-scaffold-python/blob/master/examples/python-app/run.sh) and how to [start and stop the emulator](https://github.com/davidwtbuxton/gae-secure-scaffold-python/blob/master/src/securescaffold/tests/test_factory.py) when writing tests. **N.B. the emulator is for testing and local development only. Do not use it when deploying your application to App Engine.**
+The included examples show [how to start the datastore emulator and the Flask server for local development](https://github.com/google/gae-secure-scaffold-python3/blob/master/examples/python-app/run.sh) and how to [start and stop the emulator](https://github.com/google/gae-secure-scaffold-python3/blob/master/src/securescaffold/tests/test_factory.py) when writing tests. **N.B. the emulator is for testing and local development only. Do not use it when deploying your application to App Engine.**
 
 
 ### Configuring your application with FLASK_SETTINGS_FILENAME
@@ -81,7 +81,7 @@ And add the environment variable to `app.yaml`:
     env_variables:
       FLASK_SETTINGS_FILENAME: "settings.py"
 
-See the [Flask documentation for configuring an application](https://flask.palletsprojects.com/en/master/config/) for more details.
+See [Configuration Handling](https://flask.palletsprojects.com/en/master/config/) in the Flask documentation for more details.
 
 
 ### Changing the CSP configuration
