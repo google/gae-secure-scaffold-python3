@@ -29,6 +29,8 @@ locale_test_data = [
     (["en", "fr", "fr-CH"], "fr-CH, fr;q=0.9", "/intl/fr-CH/"),
     (["en", "fr-FR"], "fr-CH", "/intl/fr-FR/"),
     (["en", "fr-FR"], "fr", "/intl/fr-FR/"),
+    # Safari on Mac lower-cases language codes.
+    (["en", "fr-CH", "fr"], "fr-ch", "/intl/fr-CH/"),
 ]
 
 
