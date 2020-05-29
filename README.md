@@ -138,6 +138,11 @@ App Engine supports [the IAP service](https://cloud.google.com/iap/docs) (Identi
 
       return "Not signed-in"
 
+#### Mocking user on the local development server
+
+Secure Scaffold mocks a User object as `user@example.com` by default.
+You can change the mocked user's email address by setting it as the environment variable `GAESS_MOCK_EMAIL`.
+If you want to test the app as an admin user, assign 1 to the environment variable `GAESS_MOCK_ADMIN`.
 
 ### Securing request handlers and cron tasks
 

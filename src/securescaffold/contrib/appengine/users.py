@@ -16,6 +16,7 @@
 This only works when IAP is enabled for your App Engine instance
 """
 import flask
+import os
 
 
 USER_ADMIN_HEADER = "X-Appengine-User-Is-Admin"
@@ -116,6 +117,8 @@ class User:
 
 
 def get_current_user():
+    if not in_production():
+        return get_mock_user()
     try:
         return User()
     except UserNotFoundError:
@@ -123,7 +126,20 @@ def get_current_user():
 
 
 def is_current_user_admin():
+    if not in_production():
+        return os.getenv('GAESS_MOCK_ADMIN', False)
     return get_header(USER_ADMIN_HEADER) == "1"
 
+
+def in_production():
+    """Checks if it is production environment."""
+    return os.getenv('GAE_ENV', '').startswith('standard')
+
+def get_mock_user():
+    """Returns a mock user."""
+    email = os.getenv('GAESS_MOCK_EMAIL', 'user@example.com')
+    auth_domain = email.split('@')[-1]
+    user = User(email=email, _auth_domain=auth_domain)
+    return user
 
 IsCurrentAdmin = is_current_user_admin
