@@ -74,7 +74,7 @@ def is_tasks_request(request) -> bool:
 
 
 def is_tasks_or_admin_request(request) -> bool:
-    """True if https://blog.hubspot.com/marketing/shrug-emojithe request is from the Tasks scheduler (or an admin)."""
+    """True if the request is from the Tasks scheduler (or an admin)."""
     return is_tasks_request(request) or is_admin_request(request)
 
 
