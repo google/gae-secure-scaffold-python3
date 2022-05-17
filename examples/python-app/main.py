@@ -34,9 +34,9 @@ def about():
     """
 
     # The Anchors renderer trusts the headers in the Markdown file.
-    with open("README-secure-scaffold.md") as fh:
-        m = mistune.Markdown(renderer=Anchors())
-        readme = m.render(fh.read())
+    with open("README.md") as fh:
+        m = mistune.create_markdown(renderer=Anchors())
+        readme = m(fh.read())
         readme = markupsafe.Markup(readme)
 
     context = {
@@ -75,7 +75,7 @@ def headers():
     return flask.render_template("headers.html", **context)
 
 
-class Anchors(mistune.Renderer):
+class Anchors(mistune.HTMLRenderer):
     """Adds id attributes to <h*> elements.
 
     This is not safe if you cannot trust the Markdown content.
