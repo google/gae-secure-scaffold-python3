@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 from unittest import mock
 
 import pytest
@@ -68,7 +67,7 @@ def test_create_app_adds_csp_headers(ndb_client):
         " 'self' www.google.com www.youtube.com; script-src 'self'"
         " ajax.googleapis.com *.googleanalytics.com *.google-analytics.com;"
         " style-src 'self' ajax.googleapis.com fonts.googleapis.com"
-        " *.gstatic.com; default-src 'self' *.gstatic.com"
+        " *.gstatic.com; object-src 'none'; default-src 'self' *.gstatic.com"
     )
     assert resp.headers["Content-Security-Policy"] == expected
 
