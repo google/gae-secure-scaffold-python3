@@ -54,8 +54,7 @@ class RedirectTestCase(unittest.TestCase):
                 response = client.get("/", headers=headers)
 
                 self.assertEqual(response.status_code, 302)
-                _, _, path = response.location.partition("http://localhost")
-                self.assertEqual(path, expected)
+                self.assertEqual(response.location, expected)
 
     def test_default_config_locales(self):
         with self.assertRaises(KeyError):
@@ -65,7 +64,7 @@ class RedirectTestCase(unittest.TestCase):
         response = client.get("/")
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.location, "http://localhost/intl/en/")
+        self.assertEqual(response.location, "/intl/en/")
 
     def test_default_config_locales_redirect_to(self):
         with self.assertRaises(KeyError):
@@ -75,4 +74,4 @@ class RedirectTestCase(unittest.TestCase):
         response = client.get("/")
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.location, "http://localhost/intl/en/")
+        self.assertEqual(response.location, "/intl/en/")

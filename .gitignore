@@ -10,3 +10,5 @@ __pycache__/
 .nox/
 /dist/
 .mypy_cache/
+.venv/
+/build/
