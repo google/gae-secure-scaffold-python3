@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import urllib.parse
 from typing import Optional
 
 import flask
@@ -44,6 +45,17 @@ def best_match(requested_langs: LanguageAccept, supported_langs: list) -> Option
     return result
 
 
+def add_query_to_url(path: str, qs: str) -> str:
+    """Add query params to a URL path, preserving existing path params."""
+    parsed = urllib.parse.urlsplit(path)
+    old_params = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+    new_params = urllib.parse.parse_qsl(qs, keep_blank_values=True)
+    query = urllib.parse.urlencode(old_params + new_params)
+    parsed = parsed._replace(query=query)
+
+    return urllib.parse.urlunsplit(parsed)
+
+
 def lang_redirect():
     """Redirects the user depending on the Accept-Language header.
 
@@ -62,5 +74,9 @@ def lang_redirect():
             locale = DEFAULT_LANGS[0]
 
     redirect_to = locales_redirect_to.format(locale=locale)
+
+    if flask.request.query_string:
+        # Preserve query parameters on redirect.
+        redirect_to = add_query_to_url(redirect_to, flask.request.query_string)
 
     return flask.redirect(redirect_to)
