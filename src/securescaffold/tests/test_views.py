@@ -75,3 +75,18 @@ class RedirectTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.location, "/intl/en/")
+
+    def test_redirect_with_query(self):
+        client = demo_app.test_client()
+        response = client.get("/", query_string={"foo": "bar"})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, "/intl/en/?foo=bar")
+
+    def test_redirect_with_query_preserves_original_query(self):
+        client = demo_app.test_client()
+        demo_app.config["LOCALES_REDIRECT_TO"] = "/test?baz=qux"
+        response = client.get("/", query_string={"foo": "bar"})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, "/test?baz=qux&foo=bar")
