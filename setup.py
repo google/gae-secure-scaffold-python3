@@ -24,7 +24,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Secure Scaffold",
-    version="1.0.0",
+    version="1.1.0",
     packages=setuptools.find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=install_requires,

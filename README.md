@@ -40,6 +40,10 @@ Add the library to requirements.txt:
     # requirements.txt
     https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
 
+Better is to pin to a specific tag or revision. For example:
+
+    https://github.com/google/gae-secure-scaffold-python3/archive/1.1.0.zip
+
 Install the library in your Python development environment:
 
     pip install https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
