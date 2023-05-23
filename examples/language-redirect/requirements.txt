@@ -1,4 +1,4 @@
-Flask==1.1.1
+Flask==2.3.2
 https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
 google-cloud-ndb
 flask-talisman
