@@ -20,7 +20,7 @@ from werkzeug.datastructures import LanguageAccept
 
 
 DEFAULT_LANGS = ["en"]
-DEFAULT_LANGS_REDIRECT_TO = "/intl/{locale}/"
+DEFAULT_LANGS_REDIRECT_TO = "/intl/{locale}{path}"
 
 
 def best_match(requested_langs: LanguageAccept, supported_langs: list) -> Optional[str]:
@@ -56,7 +56,7 @@ def add_query_to_url(path: str, qs: str) -> str:
     return urllib.parse.urlunsplit(parsed)
 
 
-def lang_redirect():
+def lang_redirect(path: str = ""):
     """Redirects the user depending on the Accept-Language header.
 
     Use this with @flask.before_request or as a view.
@@ -73,7 +73,7 @@ def lang_redirect():
         else:
             locale = DEFAULT_LANGS[0]
 
-    redirect_to = locales_redirect_to.format(locale=locale)
+    redirect_to = locales_redirect_to.format(locale=locale, path=flask.request.path)
 
     if flask.request.query_string:
         # Preserve query parameters on redirect.

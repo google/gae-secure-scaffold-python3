@@ -21,6 +21,7 @@ import securescaffold.views
 
 demo_app = flask.Flask(__name__)
 demo_app.add_url_rule("/", "home", securescaffold.views.lang_redirect)
+demo_app.add_url_rule("/<path:path>", view_func=securescaffold.views.lang_redirect)
 
 locale_test_data = [
     # LOCALES, Accept-Language header, expected redirect
@@ -90,3 +91,17 @@ class RedirectTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.location, "/test?baz=qux&foo=bar")
+
+    def test_redirect_preserves_path(self):
+        client = demo_app.test_client()
+        response = client.get("/foo")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, "/intl/en/foo")
+
+    def test_redirect_preserves_path_and_query(self):
+        client = demo_app.test_client()
+        response = client.get("/foo", query_string={"bar": "baz"})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, "/intl/en/foo?bar=baz")
