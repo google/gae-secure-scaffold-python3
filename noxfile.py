@@ -18,8 +18,10 @@ import nox
 nox.options.default_venv_backend = "venv"
 
 
-@nox.session(python=["3.7", "3.8", "3.9", "3.10"])
-def tests(session):
+@nox.session(python=["3.8", "3.9", "3.10", "3.11"])
+@nox.parametrize("flask", ["2", "3"])
+def tests(session, flask):
     session.install("pytest")
+    session.install(f"flask~={flask}.0")
     session.install(".")
     session.run("pytest", "--disable-warnings")

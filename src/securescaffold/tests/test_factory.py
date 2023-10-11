@@ -81,7 +81,7 @@ def test_create_app_adds_other_security_headers(ndb_client):
     assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
     assert response.headers["X-Content-Type-Options"] == "nosniff"
     assert response.headers["X-Frame-Options"] == "SAMEORIGIN"
-    assert response.headers["X-Xss-Protection"] == "1; mode=block"
+    assert "X-Xss-Protection" not in response.headers
 
 
 def test_extra_flask_args(ndb_client):

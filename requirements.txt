@@ -1,4 +1,4 @@
-Flask
+Flask>=2.0
 flask-talisman
-flask-seasurf
+flask-seasurf @ https://github.com/maxcountryman/flask-seasurf/archive/f383b482c69e0b0e8064a8eb89305cea3826a7b6.zip
 google-cloud-ndb
