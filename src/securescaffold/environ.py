@@ -18,6 +18,7 @@ import flask
 
 
 X_APPENGINE_QUEUENAME = "X-Appengine-Queuename"
+X_APPENGINE_SCHEDULER = "X-Cloudscheduler"
 X_APPENGINE_USER_IS_ADMIN = "X-Appengine-User-Is-Admin"
 
 
@@ -66,9 +67,10 @@ def is_tasks_request(request) -> bool:
 
     This also works for requests from the Cron scheduler.
     """
-    value = request.headers.get(X_APPENGINE_QUEUENAME)
-
-    return bool(value)
+    is_cron_scheduler_request = request.headers.get(X_APPENGINE_QUEUENAME)
+    is_task_scheduler_request = request.headers.get(X_APPENGINE_SCHEDULER) == "true"
+    
+    return bool(is_cron_scheduler_request) or is_task_scheduler_request
 
 
 def is_tasks_or_admin_request(request) -> bool:
