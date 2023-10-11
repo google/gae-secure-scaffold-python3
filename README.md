@@ -38,15 +38,11 @@ We have included examples of websites that use the Secure Scaffold. We hope you 
 Add the library to requirements.txt:
 
     # requirements.txt
-    https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
-
-Better is to pin to a specific tag or revision. For example:
-
-    https://github.com/google/gae-secure-scaffold-python3/archive/1.1.0.zip
+    https://github.com/google/gae-secure-scaffold-python3/archive/2.0.0.zip
 
 Install the library in your Python development environment:
 
-    pip install https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
+    pip install https://github.com/google/gae-secure-scaffold-python3/archive/2.0.0.zip
 
 Import the library and use it to create a Flask application:
 
@@ -76,7 +72,7 @@ You can customise your application by creating a Python file. Then set the envir
 And add the environment variable to `app.yaml`:
 
     # app.yaml
-    runtime: python37
+    runtime: python311
 
     handlers:
       - url: /.*
