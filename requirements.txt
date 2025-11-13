@@ -1,4 +1,9 @@
-Flask>=2.0
-flask-talisman
-flask-seasurf @ https://github.com/maxcountryman/flask-seasurf/archive/f383b482c69e0b0e8064a8eb89305cea3826a7b6.zip
-google-cloud-ndb
+Flask==3.0.0
+Werkzeug==3.0.1
+https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
+google-cloud-ndb==2.2.1
+google-cloud-storage==2.10.0
+flask-talisman==1.1.0
+flask-seasurf==1.1.1
+Pillow==10.1.0
+python-dateutil==2.8.2

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Timeline - Community Calendar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <h2 class="mb-4"><i class="fas fa-stream"></i> Community Timeline</h2>
+
+        <!-- Create Event Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus-circle"></i> Create New Event
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('create_event') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Event Title *</label>
+                        <input type="text"
+                               class="form-control"
+                               id="title"
+                               name="title"
+                               required
+                               placeholder="What's happening?">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control"
+                                  id="description"
+                                  name="description"
+                                  rows="3"
+                                  placeholder="Tell us more about this event..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="event_date" class="form-label">Event Date *</label>
+                            <input type="date"
+                                   class="form-control"
+                                   id="event_date"
+                                   name="event_date"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="event_time" class="form-label">Event Time</label>
+                            <input type="time"
+                                   class="form-control"
+                                   id="event_time"
+                                   name="event_time">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text"
+                               class="form-control"
+                               id="location"
+                               name="location"
+                               placeholder="Where will this event take place?">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Post Event
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Events Feed -->
+        <h4 class="mb-3">Recent Events</h4>
+
+        {% if events %}
+            {% for event in events %}
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ event.author.profile_image_url }}"
+                             alt="{{ event.author.display_name }}"
+                             class="rounded-circle me-3"
+                             width="50"
+                             height="50"
+                             style="object-fit: cover;">
+                        <div>
+                            <h6 class="mb-0">{{ event.author.display_name }}</h6>
+                            <small class="text-muted">
+                                {{ event.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <h5 class="card-title">
+                        <i class="fas fa-calendar-day text-primary"></i>
+                        {{ event.title }}
+                    </h5>
+
+                    {% if event.description %}
+                    <p class="card-text">{{ event.description }}</p>
+                    {% endif %}
+
+                    <div class="event-details mb-3">
+                        <p class="mb-1">
+                            <i class="fas fa-calendar text-primary"></i>
+                            <strong>Date:</strong>
+                            {{ event.event_date.strftime('%A, %B %d, %Y') }}
+                            {% if event.event_time %}
+                                at {{ event.event_time }}
+                            {% endif %}
+                        </p>
+
+                        {% if event.location %}
+                        <p class="mb-1">
+                            <i class="fas fa-map-marker-alt text-danger"></i>
+                            <strong>Location:</strong> {{ event.location }}
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('view_event', event_id=event.key.id()) }}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-comment"></i> View & Comment
+                        </a>
+
+                        {% if current_user.key == event.author_key or current_user.is_admin %}
+                        <form method="POST"
+                              action="{{ url_for('delete_event', event_id=event.key.id()) }}"
+                              class="d-inline"
+                              onsubmit="return confirm('Are you sure you want to delete this event?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            No events yet. Be the first to create one!
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

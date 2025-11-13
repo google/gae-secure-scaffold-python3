@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Community Calendar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="fas fa-cog"></i> Admin Panel
+        </h2>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-users"></i> Total Users
+                        </h5>
+                        <h2>{{ users|length }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-calendar-alt"></i> Total Events
+                        </h5>
+                        <h2>{{ events|length }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-danger">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-user-shield"></i> Admins
+                        </h5>
+                        <h2>{{ users|selectattr('is_admin')|list|length }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Management -->
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users"></i> User Management
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Profile</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>
+                                    <img src="{{ user.profile_image_url }}"
+                                         alt="{{ user.display_name }}"
+                                         class="rounded-circle"
+                                         width="40"
+                                         height="40"
+                                         style="object-fit: cover;">
+                                </td>
+                                <td>{{ user.display_name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.is_admin %}
+                                    <span class="badge bg-danger">Admin</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">User</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    {% if user.key.id() != current_user.key.id() %}
+                                    <form method="POST"
+                                          action="{{ url_for('toggle_admin', user_id=user.key.id()) }}"
+                                          class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-primary"
+                                                title="Toggle admin status">
+                                            {% if user.is_admin %}
+                                            <i class="fas fa-user-minus"></i> Remove Admin
+                                            {% else %}
+                                            <i class="fas fa-user-plus"></i> Make Admin
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <span class="text-muted">(You)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Events -->
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-alt"></i> Recent Events
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Event Date</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in events[:10] %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('view_event', event_id=event.key.id()) }}">
+                                        {{ event.title }}
+                                    </a>
+                                </td>
+                                <td>{{ event.author.display_name }}</td>
+                                <td>{{ event.event_date.strftime('%b %d, %Y') }}</td>
+                                <td>{{ event.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <a href="{{ url_for('view_event', event_id=event.key.id()) }}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <form method="POST"
+                                          action="{{ url_for('delete_event', event_id=event.key.id()) }}"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Are you sure?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

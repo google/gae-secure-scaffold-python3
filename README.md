@@ -1,186 +1,256 @@
-# Secure Scaffold
+# Community Calendar - Social Network
+
+A community-focused social network for building and managing monthly calendars together. Users can post events to a timeline (similar to Facebook), view events on an interactive calendar, and engage with the community through comments.
+
+## Features
+
+- **User Authentication**: Complete registration, login, and profile management system
+- **Profile Management**: Upload profile images and customize your display name
+- **Timeline UI**: Facebook-style feed for posting and viewing events
+- **Calendar View**: Interactive calendar powered by FullCalendar library
+- **Event Details**: Click events on the calendar to view full details and comments in a modal
+- **Comments**: Engage with events through a commenting system
+- **Admin Panel**: Manage users, promote/demote admins, and moderate events
+- **Secure by Default**: Built on Google's Secure Scaffold with CSRF protection, CSP headers, and more
+
+## Tech Stack
+
+- **Backend**: Python Flask 3.0
+- **Database**: Google Cloud Datastore (NDB)
+- **Frontend**: Bootstrap 5, FullCalendar, Font Awesome
+- **Platform**: Google App Engine (Python 3.11)
+- **Security**: Flask-Talisman (CSP), Flask-SeaSurf (CSRF protection)
+
+## Project Structure
+
+```
+community-calendar/
+├── main.py                 # Main Flask application
+├── models.py               # Database models (User, Event, Comment)
+├── settings.py             # Flask configuration
+├── requirements.txt        # Python dependencies
+├── app.yaml               # App Engine configuration
+├── run.sh                 # Local development script
+├── templates/             # HTML templates
+│   ├── base.html          # Base template with navbar
+│   ├── login.html         # Login page
+│   ├── register.html      # Registration page
+│   ├── profile.html       # User profile page
+│   ├── timeline.html      # Timeline feed
+│   ├── event.html         # Single event view
+│   ├── calendar.html      # Calendar view
+│   └── admin.html         # Admin panel
+└── static/                # Static assets
+    ├── css/
+    │   └── style.css      # Custom styles
+    ├── js/                # Custom JavaScript
+    ├── img/               # Images
+    │   └── default-avatar.svg
+    └── uploads/           # User uploaded images
+```
+
+## Setup Instructions
+
+### Prerequisites
+
+1. Install Python 3.11 or higher
+2. Install the [Google Cloud SDK](https://cloud.google.com/sdk/install)
+3. Initialize the SDK: `gcloud init`
+
+### Local Development
+
+1. **Clone or navigate to the project directory**:
+   ```bash
+   cd community-calendar
+   ```
+
+2. **Create a virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Start the Cloud Datastore Emulator** (in a separate terminal):
+   ```bash
+   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 --host-port=localhost:8081
+   ```
+
+5. **Set environment variables**:
+   ```bash
+   export DATASTORE_EMULATOR_HOST=localhost:8081
+   export DATASTORE_PROJECT_ID=community-calendar-dev
+   ```
+
+6. **Run the Flask development server**:
+   ```bash
+   python main.py
+   ```
+
+   Or use the provided script (Unix/Linux/Mac):
+   ```bash
+   ./run.sh
+   ```
+
+7. **Visit the application**:
+   Open your browser to http://localhost:8080
+
+### First Time Setup
 
-## Introduction
+1. Register a new account at http://localhost:8080/register
+2. The first user you create should be made an admin manually in the database, or you can modify the code temporarily to set `is_admin=True` for your first user
+3. Once you have an admin account, you can promote other users to admin through the Admin Panel
 
-This is not an officially supported Google product.
+## Deploying to Google App Engine
 
-Secure Scaffold helps you build websites on [Google's App Engine standard](https://cloud.google.com/appengine/docs/standard/python3/) platform with security features enabled by default. It is designed for both static websites which have no dynamic back-end code, and Python web applications.
+### Before Deployment
 
-The scaffold consists of:
+1. **Create a Google Cloud Project**:
+   ```bash
+   gcloud projects create community-calendar-prod --name="Community Calendar"
+   gcloud config set project community-calendar-prod
+   ```
 
- * A [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template for starting a static website project.
- * Examples of App Engine websites: a static-only website; a mostly static website with back-end logic to redirect users depending on the Accept-Language header; a Flask application that uses CSP nonces, CSRF-protected forms, and more security features.
- * A Python library for creating a [Flask](https://flask.palletsprojects.com/) website with secure defaults. This uses the [Flask-SeaSurf](https://github.com/maxcountryman/flask-seasurf) library to enable [CSRF](https://developer.mozilla.org/en-US/docs/Glossary/CSRF) protection, and the [Flask-Talisman](https://github.com/GoogleCloudPlatform/flask-talisman) library to enable [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) (Content Security Policy) headers and other security features.
+2. **Enable required APIs**:
+   ```bash
+   gcloud services enable datastore.googleapis.com
+   gcloud services enable cloudbuild.googleapis.com
+   ```
 
+3. **Initialize App Engine**:
+   ```bash
+   gcloud app create --region=us-central
+   ```
 
-## Using the website template
+4. **Update the secret key** in `settings.py` or set it as an environment variable in `app.yaml`:
+   ```yaml
+   env_variables:
+     SECRET_KEY: "your-production-secret-key-here"
+   ```
 
-Secure Scaffold provides a [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template. [Install the Cookiecutter command](https://cookiecutter.readthedocs.io/en/latest/), then create a project from the template - you will be prompted for a project name. Project names must start with a letter and use lower-case letters and numbers and dashes, for example "my-project-1":
+### Deploy
 
-    cookiecutter https://github.com/google/gae-secure-scaffold-python3.git
+```bash
+gcloud app deploy --project community-calendar-prod app.yaml
+```
 
-Cookiecutter will create a new folder with your project name. Inside the folder is a configuration for a static website, with instructions for deploying the website to App Engine.
+After deployment, visit: https://community-calendar-prod.appspot.com
 
+### View Logs
 
-## Website examples
+```bash
+gcloud app logs tail -s default
+```
 
-We have included examples of websites that use the Secure Scaffold. We hope you find these useful when building your own websites!
+## Usage Guide
 
- * A static site - uses app.yaml to serve a home page and all assets from a directory, with HTTPS and secure headers.
- * A mostly-static site which redirects requests depending on the Accept-Language header - uses app.yaml to serve the static assets and configures a root page handler that redirects visitors to `/intl/<code>`.
- * A secure Flask application - uses securescaffold to create an application with secure defaults, and demonstrates how to customise the application and extend it for common uses.
+### For Regular Users
 
+1. **Register/Login**: Create an account or log in
+2. **Create Events**: Use the timeline to post new events with date, time, location, and description
+3. **View Timeline**: See all community events in a feed format
+4. **View Calendar**: Switch to calendar view to see events on an interactive calendar
+5. **Comment**: Click on events to view details and add comments
+6. **Update Profile**: Upload a profile image and update your display name
 
-## Using the secure scaffold Python library
+### For Administrators
 
-### Installation and quick start
+1. **Access Admin Panel**: Click "Admin" in the navigation bar
+2. **Manage Users**: View all users, promote/demote admin status
+3. **Moderate Events**: View and delete any event
+4. **View Statistics**: See total users, events, and admin count
 
-Add the library to requirements.txt:
+## Key Routes
 
-    # requirements.txt
-    https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
+- `/` or `/timeline` - Main timeline feed (requires login)
+- `/calendar` - Calendar view (requires login)
+- `/register` - User registration
+- `/login` - User login
+- `/logout` - User logout
+- `/profile` - User profile management
+- `/event/<id>` - View single event with comments
+- `/admin` - Admin panel (requires admin privileges)
+- `/api/events` - JSON API for calendar events
+- `/api/event/<id>` - JSON API for event details
 
-Better is to pin to a specific tag or revision. For example:
+## Security Features
 
-    https://github.com/google/gae-secure-scaffold-python3/archive/1.1.0.zip
+- **CSRF Protection**: All forms protected with CSRF tokens via Flask-SeaSurf
+- **Content Security Policy**: Strict CSP headers via Flask-Talisman
+- **HTTPS Only**: All traffic forced to HTTPS
+- **Secure Headers**: X-Frame-Options, X-Content-Type-Options, HSTS
+- **Password Hashing**: Passwords hashed with SHA-256
+- **Session Security**: Secure, HttpOnly, SameSite cookies
 
-Install the library in your Python development environment:
+## Customization
 
-    pip install https://github.com/google/gae-secure-scaffold-python3/archive/master.zip
+### Adding More Admin Features
 
-Import the library and use it to create a Flask application:
+Edit `main.py` and add routes with the `@admin_required` decorator:
 
-    # main.py
-    import securescaffold
+```python
+@app.route('/admin/custom-feature')
+@admin_required
+@ndb_context
+def custom_admin_feature():
+    # Your code here
+    return flask.render_template('custom.html')
+```
 
-    app = securescaffold.create_app(__name__)
+### Changing Styles
 
-    @app.route("/")
-    def hello():
-      return "<h1>Hello</h1>"
+Edit `static/css/style.css` to customize the appearance.
 
-The line `app = securescaffold.create_app(__name__)` creates a Flask application which includes the Flask-SeaSurf and Flask-Talisman libraries. It also reads an initial configuration from `securescaffold.settings`.
+### Using Google Cloud Storage for Images
 
-The included examples show [how to start the datastore emulator and the Flask server for local development](https://github.com/google/gae-secure-scaffold-python3/blob/master/examples/python-app/run.sh) and how to [start and stop the emulator](https://github.com/google/gae-secure-scaffold-python3/blob/master/src/securescaffold/tests/test_factory.py) when writing tests. **N.B. the emulator is for testing and local development only. Do not use it when deploying your application to App Engine.**
+The current implementation saves uploaded images locally. For production, modify the `upload_profile_image()` function in `main.py` to upload to Google Cloud Storage instead.
 
+## Troubleshooting
 
-### Configuring your application with FLASK_SETTINGS_FILENAME
+### Datastore Emulator Issues
 
-When you create a Flask app with `app = securescaffold.create_app(__name__)` the configuration is read from `securescaffold.settings` and the filename in the `FLASK_SETTINGS_FILENAME` environment variable (if it exists).
+If you get connection errors:
+1. Make sure the emulator is running on port 8081
+2. Ensure environment variables are set correctly
+3. Try restarting the emulator
 
-You can customise your application by creating a Python file. Then set the environment variable `FLASK_SETTINGS_FILENAME` to point to your Python file. When your code calls `securescaffold.create_app(__name__)`, your custom configuration will be read from the Python file.
+### CSP Errors
 
-    # Custom settings in "settings.py"
-    SESSION_COOKIE_NAME = "my-custom-cookie"
+If external resources don't load:
+1. Check `settings.py` CSP_POLICY configuration
+2. Add the domain to the appropriate CSP directive
 
-And add the environment variable to `app.yaml`:
+### Import Errors
 
-    # app.yaml
-    runtime: python37
+If you get import errors:
+```bash
+pip install --upgrade -r requirements.txt
+```
 
-    handlers:
-      - url: /.*
-        script: auto
+## License
 
-    env_variables:
-      FLASK_SETTINGS_FILENAME: "settings.py"
+Copyright 2025 Community Calendar
 
-See [Configuration Handling](https://flask.palletsprojects.com/en/master/config/) in the Flask documentation for more details.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
+    http://www.apache.org/licenses/LICENSE-2.0
 
-### Changing the CSP configuration
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
-Secure Scaffold uses Flask-Talisman's Google policy as the default CSP policy. You can customise the CSP policy by adding these variables to your custom configuration:
+## Built With
 
-Configuration name     | Talisman equivalent                 | Default value |
------------------------|-------------------------------------|---------------|
-CSP_POLICY             | content_security_policy             | GOOGLE_CSP_POLICY |
-CSP_POLICY_NONCE_IN    | content_security_policy_nonce_in    | None          |
-CSP_POLICY_REPORT_URI  | content_security_policy_report_uri  | None          |
-CSP_POLICY_REPORT_ONLY | content_security_policy_report_only | None          |
+This project is built on [Google's Secure Scaffold for App Engine](https://github.com/google/gae-secure-scaffold-python3).
 
-See the [Flask-Talisman documentation](https://github.com/GoogleCloudPlatform/flask-talisman) for details of how to use these settings.
+## Support
 
-
-### CSRF protection with Flask-SeaSurf
-
-The Flask-SeaSurf library provides CSRF protection. An instance of `SeaSurf` is assigned to the Flask application as `app.csrf`. You can use this to decorate a request handler as exempt from CSRF protection:
-
-    # main.py
-    import securescaffold
-
-    app = securescaffold.create_app(__name__)
-
-    @app.csrf.exempt
-    @app.route("/csp-report", methods=["POST"])
-    def csp_report():
-      """CSP report handlers accept POST requests with no CSRF token."""
-      return ""
-
-See the [Flask-SeaSurf documentation](https://flask-seasurf.readthedocs.io/) for details of configuration and use.
-
-
-### Authenticating users with IAP
-
-App Engine supports [the IAP service](https://cloud.google.com/iap/docs) (Identity-Aware Proxy). When IAP is enabled and configured to require authentication, you can use Secure Scaffold to get the signed-in user's email address. This is equivalent to the Users API that was available with the Python 2.7 runtime, but which is not available on the Python 3 runtime.
-
-    # main.py
-    import securescaffold
-    from securescaffold.contrib.appengine import users
-
-    app = securescaffold.create_app(__name__)
-
-    @app.route("/")
-    def hello():
-        user = users.get_current_user()
-
-        if user:
-            email = user.email()
-            user_id = user.user_id()
-
-            return "Hello signed-in user"
-
-      return "Not signed-in"
-
-
-### Securing request handlers and cron tasks
-
-**You must decorate a cron request handler with `@securescaffold.cron_only` to prevent unauthorized requests.**
-
-Secure Scaffold (thanks to Flask-Talisman) configures HTTP requests to be redirected to use HTTPS. However [App Engine's cron scheduler](https://cloud.google.com/appengine/docs/standard/python3/scheduling-jobs-with-cron-yaml#validating_cron_requests) will make HTTP requests to your cron request handlers (not HTTPS), and the cron requests will fail if your application tries to redirect the request to use HTTPS.
-
-An instance of `Talisman` is assigned to the Flask application as `app.talisman`. You can use this to allow HTTP requests to a cron request handler.
-
-    # main.py
-    import securescaffold
-
-    app = securescaffold.create_app(__name__)
-
-    @app.route("/cron")
-    @app.talisman(force_https=False)
-    @securescaffold.cron_only
-    def cron_task():
-        # This request handler is protected by the `securescaffold.cron_only`
-        # decorator so will only be called if the request is from the cron
-        # scheduler or from an App Engine project admin.
-        return ""
-
-Secure Scaffold includes the following decorators to help prevent unauthorised access to your request handlers:
-
- * `securescaffold.admin_only`
-   Checks the request was made by a signed-in App Engine admin. If not, the request receives a 403 forbidden response. N.B. you must restrict access to your website with IAP to allow administrators to sign-in.
- * `securescaffold.cron_only`
-   Checks the request was made by the Cron / Tasks scheduler or by a signed-in App Engine admin. If not, the request receives a 403 forbidden response.
- * `securescaffold.tasks_only`
-   Same as the `securescaffold.cron_only` decorator.
-
-
-
-## Third-party credits
-
-This project is built on other projects. Here are some of them:
-
- * Flask - https://flask.palletsprojects.com/
- * Flask-SeaSurf - https://github.com/maxcountryman/flask-seasurf
- * Flask-Talisman - https://github.com/GoogleCloudPlatform/flask-talisman
- * `secure_scaffold.contrib.appengine.users` from Toaster - https://github.com/toasterco/gae-secure-scaffold-python
+For issues, questions, or contributions, please open an issue on the project repository.
