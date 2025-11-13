@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.title }} - Community Calendar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <a href="{{ url_for('timeline') }}" class="btn btn-outline-secondary mb-3">
+            <i class="fas fa-arrow-left"></i> Back to Timeline
+        </a>
+
+        <!-- Event Details -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="{{ event.author.profile_image_url }}"
+                         alt="{{ event.author.display_name }}"
+                         class="rounded-circle me-3"
+                         width="60"
+                         height="60"
+                         style="object-fit: cover;">
+                    <div>
+                        <h6 class="mb-0">{{ event.author.display_name }}</h6>
+                        <small class="text-muted">
+                            Posted on {{ event.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                        </small>
+                    </div>
+                </div>
+
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-day text-primary"></i>
+                    {{ event.title }}
+                </h3>
+
+                {% if event.description %}
+                <p class="card-text lead">{{ event.description }}</p>
+                {% endif %}
+
+                <hr>
+
+                <div class="event-details">
+                    <p class="mb-2">
+                        <i class="fas fa-calendar text-primary"></i>
+                        <strong>Date:</strong>
+                        {{ event.event_date.strftime('%A, %B %d, %Y') }}
+                        {% if event.event_time %}
+                            at {{ event.event_time }}
+                        {% endif %}
+                    </p>
+
+                    {% if event.location %}
+                    <p class="mb-2">
+                        <i class="fas fa-map-marker-alt text-danger"></i>
+                        <strong>Location:</strong> {{ event.location }}
+                    </p>
+                    {% endif %}
+                </div>
+
+                {% if current_user.key == event.author_key or current_user.is_admin %}
+                <hr>
+                <form method="POST"
+                      action="{{ url_for('delete_event', event_id=event.key.id()) }}"
+                      onsubmit="return confirm('Are you sure you want to delete this event?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete Event
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-comments"></i>
+                    Comments ({{ comments|length }})
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Add Comment Form -->
+                <form method="POST"
+                      action="{{ url_for('add_comment', event_id=event.key.id()) }}"
+                      class="mb-4">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <textarea class="form-control"
+                                  name="content"
+                                  rows="3"
+                                  placeholder="Write a comment..."
+                                  required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Post Comment
+                    </button>
+                </form>
+
+                <hr>
+
+                <!-- Display Comments -->
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="d-flex mb-3 pb-3 border-bottom">
+                        <img src="{{ comment.author.profile_image_url }}"
+                             alt="{{ comment.author.display_name }}"
+                             class="rounded-circle me-3"
+                             width="40"
+                             height="40"
+                             style="object-fit: cover;">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">
+                                {{ comment.author.display_name }}
+                                <small class="text-muted">
+                                    {{ comment.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                                </small>
+                            </h6>
+                            <p class="mb-0">{{ comment.content }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted text-center">
+                    <i class="fas fa-comment-slash"></i>
+                    No comments yet. Be the first to comment!
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
